@@ -17,3 +17,12 @@ QC-20260928111753044976,Maliya,Slip House,slip_house_parameters,Slip House Param
 QC-20260928111753044976,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-27,Shift B,residue_240,Residue % (#240),1.9,,%,2026-09-28 11:17:53
 QC-20260928111753044976,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-27,Shift B,psa_d50,Particle size analysis (PSA-D50) - (microns),0.489,,microns,2026-09-28 11:17:53
 QC-20260928111753044976,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-27,Shift B,remarks,Remarks (Comments if any),,,,2026-09-28 11:17:53
+QC-20260928112256386691,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,operator_name,Name of the operator performing the test,,Chandu,,2026-09-28 11:22:56
+QC-20260928112256386691,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,ball_mill_type,Ball Mill Type,,Continuous,,2026-09-28 11:22:56
+QC-20260928112256386691,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,batch_number,Batch Number,,011,,2026-09-28 11:22:56
+QC-20260928112256386691,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,body_code,Body Code,,110,,2026-09-28 11:22:56
+QC-20260928112256386691,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,slip_density,Slip Density (g/cc),1.89,,g/cc,2026-09-28 11:22:56
+QC-20260928112256386691,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,viscosity,Viscosity (Seconds),12.0,,Seconds,2026-09-28 11:22:56
+QC-20260928112256386691,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,residue_240,Residue % (#240),2.0,,%,2026-09-28 11:22:56
+QC-20260928112256386691,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,psa_d50,Particle size analysis (PSA-D50) - (microns),0.5,,microns,2026-09-28 11:22:56
+QC-20260928112256386691,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,remarks,Remarks (Comments if any),,,,2026-09-28 11:22:56
