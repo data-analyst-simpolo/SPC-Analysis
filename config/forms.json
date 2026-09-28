@@ -1,0 +1,798 @@
+{
+  "plants": [
+    "Tirupati",
+    "Maliya"
+  ],
+  "departments": {
+    "Slip House": {
+      "forms": [
+        {
+          "id": "slip_house_parameters",
+          "title": "Slip House Parameters - Tirupati",
+          "description": "Slip Testing Record",
+          "parameters": [
+            {
+              "id": "operator_name",
+              "label": "Name of the operator performing the test",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "ball_mill_type",
+              "label": "Ball Mill Type",
+              "type": "choice",
+              "required": true,
+              "role": "filter",
+              "options": [
+                "Continuous",
+                "Batch Ball Mill"
+              ]
+            },
+            {
+              "id": "ball_mill_number",
+              "label": "Ball Mill Number",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "filter",
+              "chart_type": "none",
+              "decimals": 0,
+              "show_if": {
+                "field": "ball_mill_type",
+                "equals": "Batch Ball Mill"
+              }
+            },
+            {
+              "id": "batch_number",
+              "label": "Batch Number",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "body_code",
+              "label": "Body Code",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "slip_density",
+              "label": "Slip Density (g/cc)",
+              "type": "number",
+              "required": true,
+              "unit": "g/cc",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "viscosity",
+              "label": "Viscosity (Seconds)",
+              "type": "number",
+              "required": true,
+              "unit": "Seconds",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "residue_240",
+              "label": "Residue % (#240)",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "psa_d50",
+              "label": "Particle size analysis (PSA-D50) - (microns)",
+              "type": "number",
+              "required": false,
+              "unit": "microns",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "remarks",
+              "label": "Remarks (Comments if any)",
+              "type": "textarea",
+              "required": false,
+              "role": "note"
+            }
+          ]
+        }
+      ]
+    },
+    "Press": {
+      "forms": [
+        {
+          "id": "press_green_tile_thickness_bd",
+          "title": "Press Green Tile Thickness & BD Test",
+          "description": "Dimensional measurements, thickness readings, and bulk density results of green tiles",
+          "parameters": [
+            {
+              "id": "operator_name",
+              "label": "Name of the operator performing the test",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "press_no",
+              "label": "Press No",
+              "type": "choice",
+              "required": true,
+              "role": "filter",
+              "options": [
+                "Press 1",
+                "Press 2"
+              ]
+            },
+            {
+              "id": "tile_size",
+              "label": "Size of the Tile (As per Final Size)",
+              "type": "choice",
+              "required": true,
+              "role": "filter",
+              "options": [
+                "600 X 1200",
+                "800 X 1600",
+                "1200 X 1800",
+                "1200 X 2400",
+                "1200 X 2780",
+                "Other"
+              ]
+            },
+            {
+              "id": "tile_size_other",
+              "label": "Other Tile Size",
+              "type": "text",
+              "required": true,
+              "role": "filter",
+              "show_if": {
+                "field": "tile_size",
+                "equals": "Other"
+              }
+            },
+            {
+              "id": "batch_number",
+              "label": "Batch Number",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "body_code",
+              "label": "Body Code",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "silo_number",
+              "label": "Silo Number",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "hopper_number",
+              "label": "Hopper Number",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "green_length",
+              "label": "Green Length (mm)",
+              "type": "number",
+              "required": true,
+              "unit": "mm",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "green_width",
+              "label": "Green Width (mm)",
+              "type": "number",
+              "required": true,
+              "unit": "mm",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "green_diagonal_1",
+              "label": "Green Diagonal 1 (mm)",
+              "type": "number",
+              "required": true,
+              "unit": "mm",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "green_diagonal_2",
+              "label": "Green Diagonal 2 (mm)",
+              "type": "number",
+              "required": true,
+              "unit": "mm",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "thickness_1",
+              "label": "Thickness 1",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_2",
+              "label": "Thickness 2",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_3",
+              "label": "Thickness 3",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_4",
+              "label": "Thickness 4",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_5",
+              "label": "Thickness 5",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_6",
+              "label": "Thickness 6",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_7",
+              "label": "Thickness 7",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_8",
+              "label": "Thickness 8",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_9",
+              "label": "Thickness 9",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_10",
+              "label": "Thickness 10",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_11",
+              "label": "Thickness 11",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_12",
+              "label": "Thickness 12",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_13",
+              "label": "Thickness 13",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "thickness_14",
+              "label": "Thickness 14",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Thickness 1-14"
+            },
+            {
+              "id": "bulk_density_1",
+              "label": "Bulk Density 1",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_2",
+              "label": "Bulk Density 2",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_3",
+              "label": "Bulk Density 3",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_4",
+              "label": "Bulk Density 4",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_5",
+              "label": "Bulk Density 5",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_6",
+              "label": "Bulk Density 6",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_7",
+              "label": "Bulk Density 7",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_8",
+              "label": "Bulk Density 8",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_9",
+              "label": "Bulk Density 9",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_10",
+              "label": "Bulk Density 10",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_11",
+              "label": "Bulk Density 11",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_12",
+              "label": "Bulk Density 12",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_13",
+              "label": "Bulk Density 13",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "bulk_density_14",
+              "label": "Bulk Density 14",
+              "type": "number",
+              "required": true,
+              "unit": "",
+              "role": "measure",
+              "chart_type": "xbar_r",
+              "decimals": 3,
+              "chart_group": "Bulk Density 1-14"
+            },
+            {
+              "id": "remarks",
+              "label": "Remarks (Comments if any)",
+              "type": "textarea",
+              "required": false,
+              "role": "note"
+            }
+          ]
+        },
+        {
+          "id": "press_powder_parameters",
+          "title": "Press Powder Parameters",
+          "description": "Powder moisture, and granulometry results",
+          "parameters": [
+            {
+              "id": "operator_name",
+              "label": "Name of the operator performing the test",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "batch_numbers",
+              "label": "Batch Numbers",
+              "type": "textarea",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "silo_numbers",
+              "label": "Silo Numbers",
+              "type": "textarea",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "hopper_number",
+              "label": "Hopper Number",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "body_code",
+              "label": "Body Code",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "moisture_content",
+              "label": "Moisture Content (%)",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "granulometry_25",
+              "label": "Granulometry - (#25) %",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "granulometry_36",
+              "label": "Granulometry - (#36) %",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "granulometry_44",
+              "label": "Granulometry - (#44) %",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "granulometry_60",
+              "label": "Granulometry - (#60) %",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "granulometry_85",
+              "label": "Granulometry - (#85) %",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "remarks",
+              "label": "Remarks (Comments if any)",
+              "type": "textarea",
+              "required": false,
+              "role": "note"
+            }
+          ]
+        }
+      ]
+    },
+    "Spray Dryer": {
+      "forms": [
+        {
+          "id": "spray_dryer_powder_parameters",
+          "title": "Spray Dryer Powder Parameters",
+          "description": "Powder moisture, and granulometry results",
+          "parameters": [
+            {
+              "id": "operator_name",
+              "label": "Name of the operator performing the test",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "batch_number",
+              "label": "Batch Number",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "body_code",
+              "label": "Body Code",
+              "type": "text",
+              "required": true,
+              "role": "filter"
+            },
+            {
+              "id": "hot_air_chamber_temperature",
+              "label": "Hot Air Chamber Temperature (Degree Celsius)",
+              "type": "number",
+              "required": true,
+              "unit": "Degree Celsius",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "spray_dryer_temperature",
+              "label": "Spray Dryer Temperature (Degree Celsius)",
+              "type": "number",
+              "required": true,
+              "unit": "Degree Celsius",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "spray_dryer_input_temperature",
+              "label": "Spray Dryer Input Temperature (Degree Celsius)",
+              "type": "number",
+              "required": true,
+              "unit": "Degree Celsius",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "spray_dryer_output_temperature",
+              "label": "Spray Dryer Output Temperature (Degree Celsius)",
+              "type": "number",
+              "required": true,
+              "unit": "Degree Celsius",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "moisture_content",
+              "label": "Moisture Content (%)",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "granulometry_25",
+              "label": "Granulometry - (#25) %",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "granulometry_36",
+              "label": "Granulometry - (#36) %",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "granulometry_44",
+              "label": "Granulometry - (#44) %",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "granulometry_60",
+              "label": "Granulometry - (#60) %",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "granulometry_85",
+              "label": "Granulometry - (#85) %",
+              "type": "number",
+              "required": true,
+              "unit": "%",
+              "role": "measure",
+              "chart_type": "imr",
+              "decimals": 3
+            },
+            {
+              "id": "remarks",
+              "label": "Remarks (Comments if any)",
+              "type": "textarea",
+              "required": false,
+              "role": "note"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
