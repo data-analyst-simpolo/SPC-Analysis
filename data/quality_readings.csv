@@ -1,1 +1,10 @@
 Record ID,Plant,Department,Form ID,Form Title,Inspection Date,Shift,Parameter ID,Parameter,Value,Text Value,Unit,Created At
+QC-20260928111716143741,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,operator_name,Name of the operator performing the test,,Chandu,,2026-09-28 11:17:16
+QC-20260928111716143741,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,ball_mill_type,Ball Mill Type,,Continuous,,2026-09-28 11:17:16
+QC-20260928111716143741,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,batch_number,Batch Number,,0010,,2026-09-28 11:17:16
+QC-20260928111716143741,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,body_code,Body Code,,108,,2026-09-28 11:17:16
+QC-20260928111716143741,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,slip_density,Slip Density (g/cc),1.8,,g/cc,2026-09-28 11:17:16
+QC-20260928111716143741,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,viscosity,Viscosity (Seconds),30.0,,Seconds,2026-09-28 11:17:16
+QC-20260928111716143741,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,residue_240,Residue % (#240),2.0,,%,2026-09-28 11:17:16
+QC-20260928111716143741,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,psa_d50,Particle size analysis (PSA-D50) - (microns),0.5,,microns,2026-09-28 11:17:16
+QC-20260928111716143741,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-28,Shift A,remarks,Remarks (Comments if any),,,,2026-09-28 11:17:16
