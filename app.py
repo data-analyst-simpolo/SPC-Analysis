@@ -112,16 +112,46 @@ def chart_options(form):
     singles=[p for p in form["parameters"] if p.get("chart_type")=="imr"]
     return groups,singles,[p["label"] for p in singles]+list(groups)
 
-def variable_group_result(df,params):
-    """Accept 2-14 available readings per record; calculate size-specific limits."""
-    pv=df[df["Parameter ID"].isin([p["id"] for p in params])].pivot_table(index="Record ID",columns="Parameter ID",values="Value",aggfunc="first").reindex(columns=[p["id"] for p in params]); pv=pv.apply(pd.to_numeric,errors="coerce")
-    valid=pv[pv.notna().sum(axis=1)>=2]
-    if len(valid)<2:return None
-    ns=valid.notna().sum(axis=1).astype(int); means=valid.mean(axis=1); ranges=valid.max(axis=1)-valid.min(axis=1)
-    grand=float((means*ns).sum()/ns.sum()); sigma=float(ranges.sum()/sum(D2[int(n)] for n in ns))
-    xu=pd.Series([grand+3*sigma/(int(n)**.5) for n in ns],index=means.index); xl=pd.Series([grand-3*sigma/(int(n)**.5) for n in ns],index=means.index)
-    rc=pd.Series([D2[int(n)]*sigma for n in ns],index=means.index); ru=pd.Series([(D2[int(n)]+3*D3[int(n)])*sigma for n in ns],index=means.index); rl=pd.Series([max(0,(D2[int(n)]-3*D3[int(n)])*sigma) for n in ns],index=means.index)
-    return {"values":means,"center":grand,"ucl":xu,"lcl":xl,"ranges":ranges,"rcenter":rc,"rucl":ru,"rlcl":rl,"sizes":ns,"sigma":sigma}
+SIZE_RULES = [
+    ("600 X 1200", 12),
+    ("1200 X 1800", 12),
+    ("1200 X 2400", 8),
+]
+
+def record_text_map(df, parameter_id):
+    part=df[df["Parameter ID"].astype(str).eq(parameter_id)][["Record ID","Text Value"]].copy()
+    return dict(zip(part["Record ID"].astype(str),part["Text Value"].fillna("").astype(str)))
+
+def fixed_size_group_result(df,params,size_label,required_n):
+    """Create a fixed-subgroup X-bar/R result for one tile size.
+
+    600 X 1200 and 1200 X 1800 use readings 1-12.
+    1200 X 2400 uses readings 1-8.
+    Limits remain constant because subgroup size is fixed within each chart.
+    """
+    size_map=record_text_map(df,"tile_size")
+    record_ids=[rid for rid,value in size_map.items() if clean(value).upper()==size_label.upper()]
+    if not record_ids:return None
+    selected_params=params[:required_n]
+    pv=df[df["Record ID"].astype(str).isin(record_ids)&df["Parameter ID"].isin([p["id"] for p in selected_params])].pivot_table(index="Record ID",columns="Parameter ID",values="Value",aggfunc="first").reindex(columns=[p["id"] for p in selected_params])
+    pv=pv.apply(pd.to_numeric,errors="coerce").dropna(how="any")
+    if len(pv)<2:return None
+    meta=df[df["Record ID"].astype(str).isin(pv.index.astype(str))].groupby("Record ID",as_index=False).first().set_index("Record ID")
+    order=sorted(pv.index,key=lambda rid:(str(meta.loc[rid,"Inspection Date"]) if rid in meta.index else "",str(meta.loc[rid,"Created At"]) if rid in meta.index else "",str(rid)))
+    pv=pv.loc[order]
+    means=pv.mean(axis=1); ranges=pv.max(axis=1)-pv.min(axis=1); grand=float(means.mean()); rbar=float(ranges.mean()); sigma=rbar/D2[required_n]
+    ucl=grand+3*sigma/(required_n**0.5); lcl=grand-3*sigma/(required_n**0.5)
+    rcenter=rbar; rucl=(D2[required_n]+3*D3[required_n])*sigma; rlcl=max(0,(D2[required_n]-3*D3[required_n])*sigma)
+    press_map=record_text_map(df,"press_no"); batch_map=record_text_map(df,"batch_number")
+    labels=[]; hover=[]
+    for rid in order:
+        raw_date=str(meta.loc[rid,"Inspection Date"]) if rid in meta.index else ""
+        dt=pd.to_datetime(raw_date,errors="coerce")
+        label=dt.strftime("%d-%b-%Y") if not pd.isna(dt) else raw_date
+        labels.append(label)
+        hover.append(f"Date: {label}<br>Press: {press_map.get(str(rid),'')}<br>Batch: {batch_map.get(str(rid),'')}<br>Readings used: {required_n}")
+    return {"values":means,"center":grand,"ucl":ucl,"lcl":lcl,"ranges":ranges,"rcenter":rcenter,"rucl":rucl,"rlcl":rlcl,"sizes":pd.Series([required_n]*len(means)),"sigma":sigma,"labels":labels,"hover":hover,"size_label":size_label,"required_n":required_n}
+
 def single_result(df,p):
     z=imr(pd.to_numeric(df.loc[df["Parameter ID"].eq(p["id"]),"Value"],errors="coerce"));
     if not z:return None
@@ -136,16 +166,17 @@ def seq(v,n):
     if hasattr(v,"__len__") and not isinstance(v,(str,bytes)):return list(v)
     return [float(v)]*n
 def addline(fig,y,name,color,n,dash="dot"):fig.add_trace(go.Scatter(x=list(range(1,n+1)),y=seq(y,n),name=name,mode="lines",line=dict(color=color,dash=dash)))
-def figures(r,sel,grouped,lsl,usl):
-    vals=list(r["values"]); n=len(vals); hover=[f"Subgroup size: {x}" for x in list(r["sizes"])]
-    f1=go.Figure(go.Scatter(x=list(range(1,n+1)),y=vals,mode="lines+markers",name=sel,text=hover,hovertemplate="Observation %{x}<br>Value %{y:.4f}<br>%{text}<extra></extra>"))
+def figures(r,sel,grouped,lsl,usl,title_suffix=""):
+    vals=list(r["values"]); n=len(vals); labels=r.get("labels",[str(i) for i in range(1,n+1)]); hover=r.get("hover",[f"Subgroup size: {x}" for x in list(r["sizes"])])
+    x=list(range(1,n+1))
+    f1=go.Figure(go.Scatter(x=x,y=vals,mode="lines+markers",name=sel,text=hover,hovertemplate="%{text}<br>Average: %{y:.4f}<extra></extra>"))
     for y,name,col,d in [(r["center"],"Center","#15803d","dash"),(r["ucl"],"UCL","#dc2626","dot"),(r["lcl"],"LCL","#dc2626","dot")]:addline(f1,y,name,col,n,d)
     if lsl is not None:addline(f1,lsl,"LSL","#f59e0b",n,"dashdot")
     if usl is not None:addline(f1,usl,"USL","#7c3aed",n,"dashdot")
-    f1.update_layout(title=("X-bar Chart: " if grouped else "Individuals Chart: ")+sel,xaxis_title="Inspection / Subgroup",yaxis_title="Value")
-    rn=len(r["ranges"]);f2=go.Figure(go.Scatter(x=list(range(1,rn+1)),y=list(r["ranges"]),mode="lines+markers",name="Range"))
+    f1.update_layout(title=("X-bar Chart: " if grouped else "Individuals Chart: ")+sel+title_suffix,xaxis_title="Inspection Date",yaxis_title="Average",xaxis=dict(tickmode="array",tickvals=x,ticktext=labels,tickangle=-35))
+    rn=len(r["ranges"]);rx=list(range(1,rn+1));f2=go.Figure(go.Scatter(x=rx,y=list(r["ranges"]),mode="lines+markers",name="Range",text=hover,hovertemplate="%{text}<br>Range: %{y:.4f}<extra></extra>"))
     for y,name,col,d in [(r["rcenter"],"Center","#15803d","dash"),(r["rucl"],"UCL","#dc2626","dot"),(r["rlcl"],"LCL","#dc2626","dot")]:addline(f2,y,name,col,rn,d)
-    f2.update_layout(title=("R Chart: " if grouped else "Moving Range Chart: ")+sel,xaxis_title="Inspection / Subgroup",yaxis_title="Range");return f1,f2
+    f2.update_layout(title=("R Chart: " if grouped else "Moving Range Chart: ")+sel+title_suffix,xaxis_title="Inspection Date",yaxis_title="Range",xaxis=dict(tickmode="array",tickvals=rx,ticktext=labels,tickangle=-35));return f1,f2
 
 def department_login():
     st.markdown(f"<div class='hero'><h1>🔐 Department Access</h1><p>{st.session_state.plant} plant</p></div>",unsafe_allow_html=True);_,c,_=st.columns([1,1.6,1])
@@ -192,7 +223,8 @@ def operator_page():
         else:
             a,b=st.columns(2);a.download_button("Download Data as Excel",xlsx(out),f"{form['id']}_data.xlsx",use_container_width=True);b.download_button("Download Data as CSV",out.to_csv(index=False).encode("utf-8-sig"),f"{form['id']}_data.csv",use_container_width=True)
 def chart_page(spec=False):
-    st.markdown("<div class='hero'><h1>🎯 Specifications & Capability</h1></div>" if spec else "<div class='hero'><h1>📈 Control Chart Analysis</h1></div>",unsafe_allow_html=True);a,b=st.columns(2);dep=a.selectbox("Department",DEPTS,key="sd" if spec else "cd");forms=CFG["departments"][dep]["forms"];form=b.selectbox("Quality Check",forms,format_func=lambda x:x["title"],key="sf" if spec else "cf");df=records(dep,form);g,s,opts=chart_options(form);sel=st.selectbox("Parameter / Group",opts,key="sp" if spec else "cp");param={"id":"group_"+slug(sel),"label":sel} if sel in g else next(p for p in s if p["label"]==sel)
+    st.markdown("<div class='hero'><h1>🎯 Specifications & Capability</h1><p>Size-wise fixed-subgroup charts with day-wise observations</p></div>" if spec else "<div class='hero'><h1>📈 Control Chart Analysis</h1><p>Separate day-wise charts for each tile size</p></div>",unsafe_allow_html=True)
+    a,b=st.columns(2);dep=a.selectbox("Department",DEPTS,key="sd" if spec else "cd");forms=CFG["departments"][dep]["forms"];form=b.selectbox("Quality Check",forms,format_func=lambda x:x["title"],key="sf" if spec else "cf");df=records(dep,form);groups,singles,opts=chart_options(form);sel=st.selectbox("Parameter / Group",opts,key="sp" if spec else "cp");param={"id":"group_"+slug(sel),"label":sel} if sel in groups else next(p for p in singles if p["label"]==sel)
     if spec:
         ol,ou=get_spec(dep,form,param);x,y=st.columns(2);lt=x.text_input("LSL",value="" if ol is None else str(ol));ut=y.text_input("USL",value="" if ou is None else str(ou))
         if st.button("Save USL / LSL",type="primary",use_container_width=True):
@@ -201,14 +233,29 @@ def chart_page(spec=False):
                 if l is not None and u is not None and l>=u:raise ValueError("LSL must be lower than USL.")
                 save_spec(dep,form,param,l,u);st.success("Limits saved.");st.rerun()
             except Exception as e:st.error(str(e))
+        specs,_=read_specs();selected=specs[specs["Plant"].astype(str).eq(st.session_state.plant)&specs["Department"].astype(str).eq(dep)&specs["Form ID"].astype(str).eq(form["id"])]
+        if not selected.empty:
+            x,y=st.columns(2);x.download_button("Download Limits as Excel",xlsx(selected,"Specification Limits"),f"{form['id']}_limits.xlsx",use_container_width=True);y.download_button("Download Limits as CSV",selected.to_csv(index=False).encode(),f"{form['id']}_limits.csv",use_container_width=True)
     if df.empty:st.info("No data available.");return
+    lsl,usl=get_spec(dep,form,param)
+    if sel in groups and form["id"]=="press_green_tile_thickness_bd":
+        rendered=0
+        for size_label,required_n in SIZE_RULES:
+            result=fixed_size_group_result(df,groups[sel],size_label,required_n)
+            st.subheader(f"{size_label} | {required_n} readings per inspection")
+            if not result:
+                st.info(f"At least two inspections of size {size_label}, each with readings 1-{required_n} complete, are required.")
+                continue
+            f1,f2=figures(result,sel,True,lsl,usl,f" | Size {size_label}");st.plotly_chart(f1,use_container_width=True);st.plotly_chart(f2,use_container_width=True);rendered+=1
+            mean=float(pd.Series(result["values"]).mean());sigma=result["sigma"]
+            if lsl is not None and usl is not None and sigma>0:
+                cp=(usl-lsl)/(6*sigma);cpk=min((usl-mean)/(3*sigma),(mean-lsl)/(3*sigma));c1,c2,c3,c4=st.columns(4);c1.metric("Mean",f"{mean:.3f}");c2.metric("Sigma",f"{sigma:.3f}");c3.metric("Cp",f"{cp:.3f}");c4.metric("Cpk",f"{cpk:.3f}")
+            else:st.info("Add both USL and LSL to display Cp and Cpk.")
+        if rendered==0:st.warning("No size has two valid fixed-size inspection subgroups yet.")
+        return
     result,param,grouped=chart_result(df,form,sel)
-    if not result:st.info("At least two inspections are required, with at least two readings in each selected subgroup.");return
-    lsl,usl=get_spec(dep,form,param);f1,f2=figures(result,sel,grouped,lsl,usl);st.plotly_chart(f1,use_container_width=True);st.plotly_chart(f2,use_container_width=True)
-    mean=float(pd.Series(result["values"]).mean());sigma=result["sigma"]
-    if lsl is not None and usl is not None and sigma>0:
-        cp=(usl-lsl)/(6*sigma);cpk=min((usl-mean)/(3*sigma),(mean-lsl)/(3*sigma));x,y=st.columns(2);x.metric("Cp",f"{cp:.3f}");y.metric("Cpk",f"{cpk:.3f}")
-    else:st.info("Add both USL and LSL to display Cp and Cpk.")
+    if not result:st.info("At least two readings are required.");return
+    f1,f2=figures(result,sel,grouped,lsl,usl);st.plotly_chart(f1,use_container_width=True);st.plotly_chart(f2,use_container_width=True)
 
 def plant_login():
     st.markdown("<div class='hero'><h1>Quality Parameter Control</h1><p>Digital inspections, SPC and capability analysis</p></div>",unsafe_allow_html=True);_,c,_=st.columns([1,1.5,1])
