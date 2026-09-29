@@ -437,3 +437,11 @@ QC-20260929111439339442,Maliya,Press,press_green_tile_thickness_bd,Press Green T
 QC-20260929111439339442,Maliya,Press,press_green_tile_thickness_bd,Press Green Tile Thickness & BD Test,2026-09-29,Shift A,press_no,Press No,,Press 1,,2026-09-29 11:14:39
 QC-20260929111439339442,Maliya,Press,press_green_tile_thickness_bd,Press Green Tile Thickness & BD Test,2026-09-29,Shift A,tile_size,Size of the Tile (As per Final Size),,1200 X 1800,,2026-09-29 11:14:39
 QC-20260929111708289231,Maliya,Press,press_green_tile_thickness_bd,Press Green Tile Thickness & BD Test,2026-09-29,Shift A,operator_name,Name of the operator performing the test,,vivek ,,2026-09-29 11:17:08
+QC-20260929112737088176,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-29,Shift A,operator_name,Name of the operator performing the test,,Pratap,,2026-09-29 11:27:37
+QC-20260929112737088176,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-29,Shift A,ball_mill_type,Ball Mill Type,,Continuous,,2026-09-29 11:27:37
+QC-20260929112737088176,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-29,Shift A,batch_number,Batch Number,,0129,,2026-09-29 11:27:37
+QC-20260929112737088176,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-29,Shift A,body_code,Body Code,,Sipl-011,,2026-09-29 11:27:37
+QC-20260929112737088176,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-29,Shift A,slip_density,Slip Density (g/cc),1.7,,g/cc,2026-09-29 11:27:37
+QC-20260929112737088176,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-29,Shift A,viscosity,Viscosity (Seconds),30.0,,Seconds,2026-09-29 11:27:37
+QC-20260929112737088176,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-29,Shift A,residue_240,Residue % (#240),0.7,,%,2026-09-29 11:27:37
+QC-20260929112737088176,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-09-29,Shift A,psa_d50,Particle size analysis (PSA-D50) - (microns),12.0,,microns,2026-09-29 11:27:37
