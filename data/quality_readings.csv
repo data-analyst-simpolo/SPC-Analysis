@@ -451,3 +451,9 @@ QC-20261004071640693801,Maliya,Slip House,slip_house_parameters,Slip House Param
 QC-20261004071640693801,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-10-03,Shift A,viscosity,Viscosity (Seconds),40.0,,Seconds,2026-10-04 07:16:40
 QC-20261004071640693801,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-10-03,Shift A,residue_240,Residue % (#240),0.47,,%,2026-10-04 07:16:40
 QC-20261004071640693801,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-10-03,Shift A,remarks,Remarks (Comments if any),,Slip ReGranding,,2026-10-04 07:16:40
+QC-20261004071643410651,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-10-03,Shift A,operator_name,Name of the operator performing the test,,Mahesh/Raghubeer,,2026-10-04 07:16:43
+QC-20261004071643410651,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-10-03,Shift A,ball_mill_type,Ball Mill Type,,Continuous,,2026-10-04 07:16:43
+QC-20261004071643410651,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-10-03,Shift A,slip_density,Slip Density (g/cc),1.71,,g/cc,2026-10-04 07:16:43
+QC-20261004071643410651,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-10-03,Shift A,viscosity,Viscosity (Seconds),40.0,,Seconds,2026-10-04 07:16:43
+QC-20261004071643410651,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-10-03,Shift A,residue_240,Residue % (#240),0.47,,%,2026-10-04 07:16:43
+QC-20261004071643410651,Maliya,Slip House,slip_house_parameters,Slip House Parameters - Tirupati,2026-10-03,Shift A,remarks,Remarks (Comments if any),,Slip ReGranding,,2026-10-04 07:16:43
