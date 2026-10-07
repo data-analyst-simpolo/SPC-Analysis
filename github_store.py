@@ -21,9 +21,9 @@ def write_text(path,text,message='Update SPC data'):
     for _ in range(8):
         current=requests.get(_url(path),headers=_headers(),params={'ref':branch},timeout=30)
         sha=None if current.status_code==404 else current.json().get('sha')
-        body={'message':message,'content':base64.b64encode(text.encode('utf-8')).decode('ascii'),'branch':branch}
+        body={'message':message,'content':base64.b64encode(text.encode()).decode(),'branch':branch}
         if sha:body['sha']=sha
         result=requests.put(_url(path),headers=_headers(),json=body,timeout=30)
         if result.status_code in (200,201):return True
         if result.status_code not in (409,422):result.raise_for_status()
-    raise RuntimeError('GitHub update conflict. Please retry.')
+    raise RuntimeError('GitHub update conflict. Retry once.')
