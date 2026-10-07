@@ -1,31 +1,19 @@
-import base64, os, requests
+import base64,os,requests
 
-API='https://api.github.com'
-
-def configured():
-    return all(os.getenv(k) for k in ('GITHUB_TOKEN','GITHUB_OWNER','GITHUB_REPO'))
-
-def _headers():
-    return {'Authorization':f"Bearer {os.environ['GITHUB_TOKEN']}",'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
-
-def _url(path):
-    return f"{API}/repos/{os.environ['GITHUB_OWNER']}/{os.environ['GITHUB_REPO']}/contents/{path}"
-
-def read_text(path):
-    if not configured(): return None
-    r=requests.get(_url(path),headers=_headers(),params={'ref':os.getenv('GITHUB_BRANCH','main')},timeout=30)
-    if r.status_code==404:return None
-    r.raise_for_status();return base64.b64decode(r.json()['content']).decode('utf-8')
-
-def write_text(path,text,message='Update SPC data'):
-    if not configured(): return False
-    url=_url(path);branch=os.getenv('GITHUB_BRANCH','main')
-    for _ in range(6):
-        get=requests.get(url,headers=_headers(),params={'ref':branch},timeout=30)
-        sha=None if get.status_code==404 else get.json().get('sha')
-        body={'message':message,'content':base64.b64encode(text.encode('utf-8')).decode('ascii'),'branch':branch}
-        if sha:body['sha']=sha
-        put=requests.put(url,headers=_headers(),json=body,timeout=30)
-        if put.status_code in (200,201):return True
-        if put.status_code not in (409,422):put.raise_for_status()
-    raise RuntimeError('GitHub file was busy. Retry once.')
+def configured():return all(os.getenv(k) for k in ('GITHUB_TOKEN','GITHUB_OWNER','GITHUB_REPO'))
+def h():return {'Authorization':f"Bearer {os.environ['GITHUB_TOKEN']}",'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+def url(p):return f"https://api.github.com/repos/{os.environ['GITHUB_OWNER']}/{os.environ['GITHUB_REPO']}/contents/{p}"
+def read_text(p):
+ if not configured():return None
+ r=requests.get(url(p),headers=h(),params={'ref':os.getenv('GITHUB_BRANCH','main')},timeout=30)
+ if r.status_code==404:return None
+ r.raise_for_status();return base64.b64decode(r.json()['content']).decode()
+def write_text(p,text,msg):
+ if not configured():return False
+ branch=os.getenv('GITHUB_BRANCH','main')
+ for _ in range(6):
+  r=requests.get(url(p),headers=h(),params={'ref':branch},timeout=30);sha=None if r.status_code==404 else r.json()['sha'];body={'message':msg,'content':base64.b64encode(text.encode()).decode(),'branch':branch}
+  if sha:body['sha']=sha
+  q=requests.put(url(p),headers=h(),json=body,timeout=30)
+  if q.status_code in (200,201):return True
+ raise RuntimeError('GitHub update conflict. Retry.')
