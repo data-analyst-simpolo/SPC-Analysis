@@ -89,7 +89,7 @@
             },
             {
               "id": "remarks",
-              "label": "Remarks (Comments if any)",
+              "label": "Remarks",
               "type": "text"
             }
           ],
@@ -119,186 +119,46 @@
               "unit": "mm"
             },
             {
-              "id": "thickness_2",
-              "label": "Thickness 2",
-              "type": "number",
+              "id": "thickness",
+              "label": "Thickness",
+              "type": "subgroup",
               "unit": "mm",
-              "chart_group": "Thickness"
+              "sample_count": 12,
+              "sample_ids": [
+                "thickness_1",
+                "thickness_2",
+                "thickness_3",
+                "thickness_4",
+                "thickness_5",
+                "thickness_6",
+                "thickness_7",
+                "thickness_8",
+                "thickness_9",
+                "thickness_10",
+                "thickness_11",
+                "thickness_12"
+              ]
             },
             {
-              "id": "thickness_3",
-              "label": "Thickness 3",
-              "type": "number",
-              "unit": "mm",
-              "chart_group": "Thickness"
-            },
-            {
-              "id": "thickness_4",
-              "label": "Thickness 4",
-              "type": "number",
-              "unit": "mm",
-              "chart_group": "Thickness"
-            },
-            {
-              "id": "thickness_5",
-              "label": "Thickness 5",
-              "type": "number",
-              "unit": "mm",
-              "chart_group": "Thickness"
-            },
-            {
-              "id": "thickness_6",
-              "label": "Thickness 6",
-              "type": "number",
-              "unit": "mm",
-              "chart_group": "Thickness"
-            },
-            {
-              "id": "thickness_7",
-              "label": "Thickness 7",
-              "type": "number",
-              "unit": "mm",
-              "chart_group": "Thickness"
-            },
-            {
-              "id": "thickness_8",
-              "label": "Thickness 8",
-              "type": "number",
-              "unit": "mm",
-              "chart_group": "Thickness"
-            },
-            {
-              "id": "thickness_9",
-              "label": "Thickness 9",
-              "type": "number",
-              "unit": "mm",
-              "chart_group": "Thickness"
-            },
-            {
-              "id": "thickness_10",
-              "label": "Thickness 10",
-              "type": "number",
-              "unit": "mm",
-              "chart_group": "Thickness"
-            },
-            {
-              "id": "thickness_11",
-              "label": "Thickness 11",
-              "type": "number",
-              "unit": "mm",
-              "chart_group": "Thickness"
-            },
-            {
-              "id": "thickness_12",
-              "label": "Thickness 12",
-              "type": "number",
-              "unit": "mm",
-              "chart_group": "Thickness"
-            },
-            {
-              "id": "thickness_13",
-              "label": "Thickness 13",
-              "type": "number",
-              "unit": "mm",
-              "chart_group": "Thickness"
-            },
-            {
-              "id": "bulk_density_2",
-              "label": "Bulk Density 2",
-              "type": "number",
+              "id": "bulk_density",
+              "label": "Bulk Density",
+              "type": "subgroup",
               "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_3",
-              "label": "Bulk Density 3",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_4",
-              "label": "Bulk Density 4",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_5",
-              "label": "Bulk Density 5",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_6",
-              "label": "Bulk Density 6",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_7",
-              "label": "Bulk Density 7",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_8",
-              "label": "Bulk Density 8",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_9",
-              "label": "Bulk Density 9",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_10",
-              "label": "Bulk Density 10",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_11",
-              "label": "Bulk Density 11",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_12",
-              "label": "Bulk Density 12",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_13",
-              "label": "Bulk Density 13",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density"
-            },
-            {
-              "id": "bulk_density_13_extra",
-              "label": "Bulk Density 13 (Additional)",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density Additional"
-            },
-            {
-              "id": "bulk_density_14",
-              "label": "Bulk Density 14",
-              "type": "number",
-              "unit": "g/cc",
-              "chart_group": "Bulk Density Additional"
+              "sample_count": 12,
+              "sample_ids": [
+                "bulk_density_1",
+                "bulk_density_2",
+                "bulk_density_3",
+                "bulk_density_4",
+                "bulk_density_5",
+                "bulk_density_6",
+                "bulk_density_7",
+                "bulk_density_8",
+                "bulk_density_9",
+                "bulk_density_10",
+                "bulk_density_11",
+                "bulk_density_12"
+              ]
             }
           ]
         }
