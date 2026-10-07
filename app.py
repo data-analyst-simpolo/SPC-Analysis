@@ -1,217 +1,250 @@
-import io, json, os, re, uuid
+import hashlib, io, json, os, re, uuid
 from datetime import date, datetime
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
-
 import github_store
 
 st.set_page_config(page_title='Manufacturing SPC & Daily Analysis',page_icon='📈',layout='wide')
 ROOT=Path(__file__).parent
 CONFIG=json.loads((ROOT/'config/forms.json').read_text(encoding='utf-8'))
+USERS=json.loads((ROOT/'config/users.json').read_text(encoding='utf-8'))['users']
 DATA_PATH=ROOT/'data/quality_readings.csv'; LIMITS_PATH=ROOT/'data/spec_limits.csv'
-DATA_COLUMNS=['Record ID','Plant','Department','Form ID','Form Title','Inspection Date','Shift','Parameter ID','Parameter','Value','Text Value','Unit','Created At']
+COLS=['Record ID','Plant','Department','Form ID','Form Title','Inspection Date','Shift','Parameter ID','Parameter','Value','Text Value','Unit','Created At']
 SHIFTS=['A','B','C','General','Not provided']
+st.markdown('''<style>.stApp{background:#f6faf7}.block-container{max-width:1450px;padding-top:1rem}.hero{background:linear-gradient(115deg,#102c20,#16803d);color:white;padding:1.2rem 1.5rem;border-radius:18px;margin-bottom:1rem}.login-head{background:linear-gradient(115deg,#102c20,#16803d);color:white;padding:1.25rem;border-radius:20px;margin-bottom:1rem}.login-card{background:white;border:1px solid #d6e5da;border-radius:22px;padding:1.2rem;box-shadow:0 18px 42px rgba(16,44,32,.12)}</style>''',unsafe_allow_html=True)
+for k in ('GITHUB_TOKEN','GITHUB_OWNER','GITHUB_REPO','GITHUB_BRANCH'):
+    if k in st.secrets:os.environ[k]=str(st.secrets[k])
 
-st.markdown('''<style>.stApp{background:#f6faf7}.block-container{max-width:1450px;padding-top:1rem}.hero{background:linear-gradient(115deg,#102c20,#16803d);color:white;padding:1.2rem 1.5rem;border-radius:18px;margin-bottom:1rem}.soft{background:white;border:1px solid #d7e5db;border-radius:14px;padding:1rem}.small{color:#63756b;font-size:.85rem}</style>''',unsafe_allow_html=True)
+def departments():
+    ds=st.session_state.get('user',{}).get('departments',[])
+    return list(CONFIG['departments']) if '*' in ds else [d for d in ds if d in CONFIG['departments']]
 
-def sync_env():
-    for k in ('GITHUB_TOKEN','GITHUB_OWNER','GITHUB_REPO','GITHUB_BRANCH'):
-        if k in st.secrets: os.environ[k]=str(st.secrets[k])
-sync_env()
+def login():
+    st.markdown("<div class='login-head'><div style='font-size:12px;font-weight:800;letter-spacing:1px'>MANUFACTURING EXCELLENCE</div><h1 style='margin:.35rem 0'>SPC & Daily Analysis Portal</h1><div>Secure plant and department access</div></div>",unsafe_allow_html=True)
+    _,c,_=st.columns([1.2,1,1.2])
+    with c:
+        st.markdown("<div class='login-card'>",unsafe_allow_html=True)
+        with st.form('login'):
+            plant=st.selectbox('Plant',['Maliya']);dept=st.selectbox('Department',['Plant Administration']+list(CONFIG['departments']))
+            username=st.text_input('Username');password=st.text_input('Password',type='password');go=st.form_submit_button('Secure Login',type='primary',use_container_width=True)
+        st.markdown('</div>',unsafe_allow_html=True)
+        if go:
+            u=USERS.get(username.strip());ok=u and hashlib.sha256(password.encode()).hexdigest()==u['password_sha256'] and plant==u['plant']
+            if ok and dept=='Plant Administration':ok=u['role']=='admin'
+            if ok and dept!='Plant Administration':ok='*' in u['departments'] or dept in u['departments']
+            if ok:st.session_state.logged=True;st.session_state.user=u;st.rerun()
+            else:st.error('Invalid plant, department, username or password.')
+        st.caption('Change the default passwords in config/users.json before deployment.')
 
 def read_csv(path,columns):
     remote=github_store.read_text(str(path.relative_to(ROOT)).replace('\\','/'))
-    if remote is not None:
-        df=pd.read_csv(io.StringIO(remote))
-    elif path.exists() and path.stat().st_size:
-        df=pd.read_csv(path)
-    else: df=pd.DataFrame(columns=columns)
+    if remote is not None:df=pd.read_csv(io.StringIO(remote))
+    elif path.exists():df=pd.read_csv(path)
+    else:df=pd.DataFrame(columns=columns)
     for c in columns:
-        if c not in df.columns:df[c]=''
+        if c not in df:df[c]=''
     return df[columns]
+def write_csv(path,df,msg):
+    text=df.to_csv(index=False);path.write_text(text,encoding='utf-8');github_store.write_text(str(path.relative_to(ROOT)).replace('\\','/'),text,msg)
+def readings():return read_csv(DATA_PATH,COLS)
+def forms():return [(d,f) for d,x in CONFIG['departments'].items() for f in x['forms']]
+def get_form(d,t):return next(f for dep,f in forms() if dep==d and f['title']==t)
+def norm(x):return re.sub(r'[^a-z0-9]+','',str(x).lower())
 
-def write_csv(path,df,message):
-    text=df.to_csv(index=False)
-    path.parent.mkdir(exist_ok=True);path.write_text(text,encoding='utf-8')
-    if github_store.configured():github_store.write_text(str(path.relative_to(ROOT)).replace('\\','/'),text,message)
+def save_record(dep,form,d,shift,values):
+    rid=str(uuid.uuid4());now=datetime.now().isoformat(timespec='seconds');rows=[]
+    for p in form.get('metadata',[])+form['parameters']:
+        v=values.get(p['id'])
+        if v is None or v=='':continue
+        rows.append({'Record ID':rid,'Plant':'Maliya','Department':dep,'Form ID':form['id'],'Form Title':form['title'],'Inspection Date':str(d),'Shift':shift,'Parameter ID':p['id'],'Parameter':p['label'],'Value':v if p['type']=='number' else '','Text Value':v.strftime('%H:%M:%S') if p['type']=='time' else ('' if p['type']=='number' else str(v)),'Unit':p.get('unit',''),'Created At':now})
+    write_csv(DATA_PATH,pd.concat([readings(),pd.DataFrame(rows)],ignore_index=True),'Append SPC inspection')
 
-def readings(): return read_csv(DATA_PATH,DATA_COLUMNS)
-def limits(): return read_csv(LIMITS_PATH,['Department','Form ID','Parameter ID','LSL','USL','Target'])
-def forms_flat():
-    out=[]
-    for dep,dc in CONFIG['departments'].items():
-        for f in dc['forms']:out.append((dep,f))
-    return out
-
-def get_form(dep,title):return next(f for d,f in forms_flat() if d==dep and f['title']==title)
-def normalize(s):return re.sub(r'[^a-z0-9]+','',str(s).lower())
-
-def append_record(dep,form,inspection_date,shift,values):
-    rid=str(uuid.uuid4());created=datetime.now().isoformat(timespec='seconds');rows=[]
-    fields=form.get('metadata',[])+form.get('parameters',[])
-    for p in fields:
-        value=values.get(p['id'],'')
-        if value is None or value=='':continue
-        numeric=value if p['type']=='number' else ''
-        text=value.strftime('%H:%M:%S') if p['type']=='time' and hasattr(value,'strftime') else ('' if p['type']=='number' else str(value))
-        rows.append({'Record ID':rid,'Plant':'Maliya','Department':dep,'Form ID':form['id'],'Form Title':form['title'],'Inspection Date':str(inspection_date),'Shift':shift,'Parameter ID':p['id'],'Parameter':p['label'],'Value':numeric,'Text Value':text,'Unit':p.get('unit',''),'Created At':created})
-    old=readings();new=pd.concat([old,pd.DataFrame(rows)],ignore_index=True)
-    write_csv(DATA_PATH,new,'Append SPC inspection')
-    return rid
-
-def field_widget(p,key):
+def widget(p,key):
     if p['type']=='number':return st.number_input(p['label'],value=None,key=key)
     if p['type']=='time':return st.time_input(p['label'],value=None,key=key)
     return st.text_input(p['label'],key=key)
 
-def parse_excel(upload,dep,form):
-    df=pd.read_excel(upload,sheet_name='Quality Entry',engine='openpyxl').dropna(how='all')
-    aliases={normalize('Inspection Date'):'Inspection Date',normalize('Shift'):'Shift'}
-    for p in form.get('metadata',[])+form.get('parameters',[]):aliases[normalize(p['label'])]=p['id']
-    # operational Press nomenclature aliases
-    extras={'date':'Inspection Date','time':'inspection_time','supopename':'supervisor_operator_name','pcrno':'press_number','finalsize':'tile_size','batchnumber':'batch_number','bodycode':'body_code','silonumber':'silo_number','grlengthmm':'green_length_mm','grweidthmm':'green_width_mm','greendiagonal1mm':'green_diagonal_1_mm','greendiagonal2mm':'green_diagonal_2_mm'}
-    for i in range(2,14):extras[normalize(f'TH. {i}')]=f'thickness_{i}';extras[normalize(f'B.D {i}')]=f'bulk_density_{i}'
+def first_scalar(value):
+    """Return one safe scalar even when pandas yields duplicate-column Series."""
+    if isinstance(value, pd.Series):
+        non_blank = value.dropna()
+        return '' if non_blank.empty else non_blank.iloc[0]
+    return value
+
+
+def clean_excel_time(value):
+    """Preserve Press time nomenclature while normalising common formats."""
+    value = first_scalar(value)
+    if value is None or (not isinstance(value, (list, tuple, dict)) and pd.isna(value)):
+        return ''
+    if hasattr(value, 'strftime'):
+        return value.strftime('%H:%M:%S')
+    raw = re.sub(r'\s+', '', str(value).strip()).upper()
+    raw = raw.rstrip('.')
+    # Operator files use variants such as 10.30AM., 10.06PM and 04:40 AM.
+    raw = re.sub(r'(?<=\d)[.](?=\d)', ':', raw)
+    match = re.fullmatch(r'(\d{1,2}):(\d{2})(?::(\d{2}))?(AM|PM)?', raw)
+    if match:
+        hour, minute, second, suffix = match.groups()
+        hour, minute, second = int(hour), int(minute), int(second or 0)
+        if suffix == 'PM' and hour < 12: hour += 12
+        if suffix == 'AM' and hour == 12: hour = 0
+        if 0 <= hour <= 23 and 0 <= minute <= 59 and 0 <= second <= 59:
+            return f'{hour:02d}:{minute:02d}:{second:02d}'
+    parsed = pd.to_datetime(raw, errors='coerce')
+    return str(value).strip() if pd.isna(parsed) else parsed.strftime('%H:%M:%S')
+
+
+def parse_excel(up,form):
+    # Read the operator workbook exactly as supplied. Blank spacer columns are
+    # ignored, and duplicate-looking Press headers are mapped to distinct IDs.
+    x=pd.read_excel(up,sheet_name='Quality Entry',engine='openpyxl').dropna(how='all')
+    x=x.loc[:,~x.columns.astype(str).str.startswith('Unnamed:')]
+    aliases={norm('Inspection Date'):'Inspection Date',norm('Shift'):'Shift'}
+    for p in form.get('metadata',[])+form['parameters']:
+        aliases[norm(p['label'])]=p['id']
+    extras={
+        'date':'Inspection Date','time':'inspection_time','supopename':'supervisor_operator_name',
+        'pcrno':'press_number','finalsize':'tile_size','batchnumber':'batch_number',
+        'bodycode':'body_code','silonumber':'silo_number','grlengthmm':'green_length_mm',
+        'grweidthmm':'green_width_mm','greenwidthmm':'green_width_mm',
+        'greendiagonal1mm':'green_diagonal_1_mm','greendiagonal2mm':'green_diagonal_2_mm',
+        'bulkdensity13':'bulk_density_13_extra','bulkdensity14':'bulk_density_14',
+        'remarkscommentsifany':'remarks'
+    }
+    for i in range(2,14):
+        extras[norm(f'TH. {i}')]=f'thickness_{i}'
+        extras[norm(f'B.D {i}')]=f'bulk_density_{i}'
     aliases.update(extras)
-    df=df.rename(columns={c:aliases.get(normalize(c),c) for c in df.columns})
-    if 'Inspection Date' not in df.columns:raise ValueError('Inspection Date / Date column is required.')
-    result=[]
-    for _,r in df.iterrows():
-        d=pd.to_datetime(r['Inspection Date'],errors='coerce')
-        if pd.isna(d):continue
-        shift=str(r.get('Shift','Not provided')).strip() if not pd.isna(r.get('Shift','Not provided')) else 'Not provided'
-        values={}
-        for p in form.get('metadata',[])+form.get('parameters',[]):
-            if p['id'] in df.columns and not pd.isna(r.get(p['id'])):values[p['id']]=r[p['id']]
-        result.append((d.date(),shift if shift in SHIFTS else 'Not provided',values))
-    return result
 
-def record_wide(df,form):
-    part=df[df['Form ID'].astype(str).eq(form['id'])].copy()
-    if part.empty:return pd.DataFrame()
-    base=part.groupby('Record ID',as_index=False).first()[['Record ID','Inspection Date','Shift','Created At']]
-    numeric=part.assign(Numeric=pd.to_numeric(part['Value'],errors='coerce')).pivot_table(index='Record ID',columns='Parameter ID',values='Numeric',aggfunc='first')
-    text=part.pivot_table(index='Record ID',columns='Parameter ID',values='Text Value',aggfunc='first')
-    return base.set_index('Record ID').join(numeric,rsuffix='_num').join(text,rsuffix='_text').reset_index()
+    # Build a new dataframe column by column instead of rename().  This avoids
+    # duplicate canonical labels, the cause of the "truth value of a Series is
+    # ambiguous" error when B.D 13 and Bulk Density 13 are both present.
+    mapped={}
+    for original in x.columns:
+        target=aliases.get(norm(original))
+        if not target:
+            continue
+        series=x[original]
+        if isinstance(series,pd.DataFrame):
+            series=series.bfill(axis=1).iloc[:,0]
+        if target in mapped:
+            mapped[target]=mapped[target].combine_first(series)
+        else:
+            mapped[target]=series
+    x=pd.DataFrame(mapped,index=x.index)
+    if 'Inspection Date' not in x.columns:
+        raise ValueError('Inspection Date / Date is required.')
 
-def imr(values):
-    x=pd.Series(values,dtype=float).dropna().reset_index(drop=True)
+    field_map={p['id']:p for p in form.get('metadata',[])+form['parameters']}
+    out=[];skipped=[]
+    for row_no,(_,r) in enumerate(x.iterrows(),start=2):
+        raw_date=first_scalar(r.get('Inspection Date',''))
+        d=pd.to_datetime(raw_date,errors='coerce')
+        if pd.isna(d):
+            skipped.append(row_no);continue
+        shift_value=first_scalar(r.get('Shift','Not provided'))
+        shift='Not provided' if shift_value is None or pd.isna(shift_value) or not str(shift_value).strip() else str(shift_value).strip()
+        if shift not in SHIFTS:shift='Not provided'
+        vals={}
+        for pid,pdef in field_map.items():
+            if pid not in x.columns:continue
+            value=first_scalar(r.get(pid,''))
+            if value is None or (not isinstance(value,(list,tuple,dict)) and pd.isna(value)) or value=='':continue
+            if pid=='inspection_time':
+                value=clean_excel_time(value)
+            elif pdef['type']=='number':
+                numeric=pd.to_numeric(value,errors='coerce')
+                if pd.isna(numeric):continue
+                value=float(numeric)
+            else:
+                value=str(value).strip().replace('\\*','*')
+            vals[pid]=value
+        out.append((d.date(),shift,vals))
+    if not out:
+        raise ValueError('No valid inspection rows were found in the Excel file.')
+    return out
+
+def wide(form):
+    x=readings();x=x[x['Form ID'].eq(form['id'])]
+    if x.empty:return pd.DataFrame()
+    b=x.groupby('Record ID').first()[['Inspection Date','Shift','Created At']]
+    n=x.assign(N=pd.to_numeric(x['Value'],errors='coerce')).pivot_table(index='Record ID',columns='Parameter ID',values='N',aggfunc='first')
+    t=x.pivot_table(index='Record ID',columns='Parameter ID',values='Text Value',aggfunc='first')
+    return b.join(n,rsuffix='_n').join(t,rsuffix='_t').reset_index()
+def imr(v):
+    x=pd.Series(v,dtype=float).dropna().reset_index(drop=True)
     if len(x)<2:return None
-    mr=x.diff().abs().dropna();mrbar=mr.mean();cl=x.mean();ucl=cl+2.66*mrbar;lcl=cl-2.66*mrbar
-    return x,cl,ucl,lcl,mr,mrbar,3.267*mrbar,0.0
+    mr=x.diff().abs().dropna();m=mr.mean();cl=x.mean();return x,cl,cl+2.66*m,cl-2.66*m,mr,m,3.267*m,0
+def xbarr(mat):
+    a=np.array(mat,float);a=a[~np.isnan(a).all(1)]
+    if len(a)<2:return None
+    means=np.nanmean(a,1);ranges=np.nanmax(a,1)-np.nanmin(a,1);n=int(np.nanmedian(np.sum(~np.isnan(a),1)));k={8:(.373,.136,1.864),12:(.266,.284,1.716)};a2,d3,d4=k[8 if n<=8 else 12];xb=means.mean();rb=ranges.mean();return means,xb,xb+a2*rb,xb-a2*rb,ranges,rb,d4*rb,d3*rb
+def fig(title,x,y,cl,u,l,unit):
+    f=go.Figure(go.Scatter(x=x,y=y,mode='lines+markers',line=dict(color='#166534',width=2),marker=dict(size=7)))
+    for v,n,c,d in [(u,'UCL','#b42318','dash'),(cl,'CL','#2563eb','dot'),(l,'LCL','#b42318','dash')]:f.add_hline(y=v,line_color=c,line_dash=d,annotation_text=f'{n}: {v:.2f}')
+    f.update_layout(title=title,xaxis_title='Observation / Inspection Date',yaxis_title=unit,height=430,margin=dict(b=95));f.update_xaxes(tickangle=-45,automargin=True);return f
 
-def xbar_r(matrix):
-    m=np.array(matrix,dtype=float);m=m[~np.isnan(m).all(axis=1)]
-    if len(m)<2:return None
-    means=np.nanmean(m,axis=1);ranges=np.nanmax(m,axis=1)-np.nanmin(m,axis=1);n=int(np.nanmedian(np.sum(~np.isnan(m),axis=1)))
-    constants={2:(1.880,0,3.267),3:(1.023,0,2.574),4:(.729,0,2.282),5:(.577,0,2.114),6:(.483,0,2.004),7:(.419,.076,1.924),8:(.373,.136,1.864),9:(.337,.184,1.816),10:(.308,.223,1.777),11:(.285,.256,1.744),12:(.266,.284,1.716)}
-    a2,d3,d4=constants.get(n,constants[12]);xb=means.mean();rb=ranges.mean()
-    return means,xb,xb+a2*rb,xb-a2*rb,ranges,rb,d4*rb,d3*rb
-
-def chart(fig_title,x,y,cl,ucl,lcl,ytitle,hover=None):
-    fig=go.Figure();fig.add_trace(go.Scatter(x=x,y=y,mode='lines+markers',name='Value',line=dict(color='#166534',width=2),marker=dict(size=7),text=hover,hovertemplate='%{text}<br>Value: %{y:.3f}<extra></extra>' if hover else None))
-    for val,name,color,dash in [(ucl,'UCL','#b42318','dash'),(cl,'CL','#2563eb','dot'),(lcl,'LCL','#b42318','dash')]:fig.add_hline(y=val,line_color=color,line_dash=dash,annotation_text=f'{name}: {val:.3f}')
-    fig.update_layout(title=fig_title,xaxis_title='Observation / Inspection Date',yaxis_title=ytitle,height=430,hovermode='x unified',margin=dict(t=70,b=85))
-    fig.update_xaxes(tickangle=-45,automargin=True)
-    return fig
-
-def selection_items(form):
-    items=[];groups=[]
+def items(form):
+    out=[];groups=[]
     for p in form['parameters']:
-        g=p.get('chart_group')
-        if g and g not in groups:groups.append(g)
-        if not g:items.append(('parameter',p['label'],p))
-    for g in groups:items.append(('group',g,{'chart_group':g,'label':g,'unit':next(p.get('unit','') for p in form['parameters'] if p.get('chart_group')==g)}))
-    return items
+        if p.get('chart_group'):
+            if p['chart_group'] not in groups:groups.append(p['chart_group'])
+        else:out.append(('p',p['label'],p))
+    for g in groups:out.append(('g',g,{'chart_group':g,'unit':next(p['unit'] for p in form['parameters'] if p.get('chart_group')==g)}))
+    return out
 
-def series_for(form,item,daywise=False,start=None,end=None):
-    df=readings();wide=record_wide(df,form)
-    if wide.empty:return None
-    wide['Date']=pd.to_datetime(wide['Inspection Date'],errors='coerce').dt.date
-    wide['Created']=pd.to_datetime(wide['Created At'],errors='coerce');wide=wide.sort_values(['Date','Created','Record ID'])
-    if start:wide=wide[wide['Date']>=start]
-    if end:wide=wide[wide['Date']<=end]
-    kind,_,obj=item
-    if kind=='parameter':
-        pid=obj['id'];wide['Metric']=pd.to_numeric(wide.get(pid),errors='coerce');wide=wide.dropna(subset=['Metric'])
-        if daywise:
-            daily=wide.groupby('Date',as_index=False)['Metric'].mean();return daily['Date'].astype(str).tolist(),daily['Metric'].tolist(),None,obj.get('unit',''),'Daily average'
-        labels=[f'Observation {i}<br>{d.strftime("%d-%b-%Y")}' for i,d in enumerate(wide['Date'],1)]
-        hover=[f'Observation: {i}<br>Date: {d.strftime("%d-%b-%Y")}<br>Time: {t if pd.notna(t) else ""}' for i,(d,t) in enumerate(zip(wide['Date'],wide.get('inspection_time',pd.Series(['']*len(wide)))),1)]
-        return labels,wide['Metric'].tolist(),hover,obj.get('unit',''),'I-MR'
-    ids=[p['id'] for p in form['parameters'] if p.get('chart_group')==obj['chart_group']]
-    matrix=wide.reindex(columns=ids).apply(pd.to_numeric,errors='coerce')
-    valid=matrix.notna().sum(axis=1)>=2;wide=wide[valid].copy();matrix=matrix[valid]
-    if daywise:
-        wide['Subgroup Average']=matrix.mean(axis=1).values
-        daily=wide.groupby('Date',as_index=False)['Subgroup Average'].mean()
-        return daily['Date'].astype(str).tolist(),daily['Subgroup Average'].tolist(),None,obj.get('unit',''),'Daily average of subgroup averages'
-    labels=[f'Observation {i}<br>{d.strftime("%d-%b-%Y")}' for i,d in enumerate(wide['Date'],1)]
-    return labels,matrix.to_numpy(),None,obj.get('unit',''),'Xbar-R'
+def series(form,item,day,start=None,end=None):
+    x=wide(form)
+    if x.empty:return None
+    x['Date']=pd.to_datetime(x['Inspection Date']).dt.date;x['Created']=pd.to_datetime(x['Created At']);x=x.sort_values(['Date','Created','Record ID'])
+    if start:x=x[x.Date>=start]
+    if end:x=x[x.Date<=end]
+    if item[0]=='p':
+        p=item[2];x['M']=pd.to_numeric(x.get(p['id']),errors='coerce');x=x.dropna(subset=['M'])
+        if day:x=x.groupby('Date',as_index=False).M.mean();return x.Date.astype(str).tolist(),x.M.tolist(),p.get('unit','')
+        return [f'Observation {i}<br>{d.strftime("%d-%b-%Y")}' for i,d in enumerate(x.Date,1)],x.M.tolist(),p.get('unit','')
+    ids=[p['id'] for p in form['parameters'] if p.get('chart_group')==item[2]['chart_group']];m=x.reindex(columns=ids).apply(pd.to_numeric,errors='coerce');ok=m.notna().sum(1)>=2;x=x[ok];m=m[ok]
+    if day:x['M']=m.mean(1).values;x=x.groupby('Date',as_index=False).M.mean();return x.Date.astype(str).tolist(),x.M.tolist(),item[2]['unit']
+    return [f'Observation {i}<br>{d.strftime("%d-%b-%Y")}' for i,d in enumerate(x.Date,1)],m.to_numpy(),item[2]['unit']
 
-def analysis_page(daywise=False):
-    st.subheader('Day-wise Analysis' if daywise else 'Observation-wise Control Charts')
-    if daywise:st.info('One point is plotted per selected date. For subgrouped fields, the point is the average of each inspection subgroup average. A daily I-MR chart is used because there is one aggregated value per day.')
-    deps=list(CONFIG['departments']);dep=st.selectbox('Department',deps,key='ad_dep'+str(daywise));titles=[f['title'] for d,f in forms_flat() if d==dep];title=st.selectbox('Form',titles,key='ad_form'+str(daywise));form=get_form(dep,title)
-    items=selection_items(form);names=[x[1] for x in items];choice=st.selectbox('Parameter / Subgroup',names,key='ad_item'+str(daywise));item=items[names.index(choice)]
-    start=end=None
-    if daywise:
-        c1,c2=st.columns(2);start=c1.date_input('From Date',value=date.today().replace(day=1),key='from');end=c2.date_input('To Date',value=date.today(),key='to')
-    result=series_for(form,item,daywise,start,end)
-    if not result:st.warning('No usable readings are available.');return
-    labels,values,hover,unit,method=result
-    if item[0]=='group' and not daywise:
-        calc=xbar_r(values)
-    else:calc=imr(values)
-    if not calc:st.warning('At least two observations/dates are required.');return
-    vals,cl,ucl,lcl,ranges,rcl,rucl,rlcl=calc
-    st.caption(f'Chart method: {method}')
-    st.plotly_chart(chart(f'{choice} - {"Day-wise" if daywise else "Observation-wise"}',labels,vals,cl,ucl,lcl,unit,hover),use_container_width=True)
-    if not daywise:
-        rlabels=labels[1:] if len(labels)==len(ranges)+1 else labels[:len(ranges)]
-        st.plotly_chart(chart(f'{choice} - Moving Range / Subgroup Range',rlabels,ranges,rcl,rucl,rlcl,unit),use_container_width=True)
-
-def entry_page():
-    st.subheader('Manual Inspection Entry')
-    dep=st.selectbox('Department',list(CONFIG['departments']),key='e_dep');titles=[f['title'] for d,f in forms_flat() if d==dep];form=get_form(dep,st.selectbox('Form',titles,key='e_form'))
+def entry():
+    st.subheader('Manual Inspection Entry');dep=st.selectbox('Department',departments());ts=[f['title'] for d,f in forms() if d==dep];form=get_form(dep,st.selectbox('Form',ts))
     with st.form('entry'):
-        c1,c2=st.columns(2);d=c1.date_input('Inspection Date');shift=c2.selectbox('Shift',SHIFTS)
-        values={};fields=form.get('metadata',[])+form.get('parameters',[]);cols=st.columns(3)
-        for i,p in enumerate(fields):
-            with cols[i%3]:values[p['id']]=field_widget(p,f"{form['id']}_{p['id']}")
-        submit=st.form_submit_button('Save Inspection',type='primary',use_container_width=True)
-    if submit:
-        rid=append_record(dep,form,d,shift,values);st.success(f'Inspection saved. Record ID: {rid}')
-
-def upload_page():
-    st.subheader('Excel Upload')
-    dep=st.selectbox('Department',list(CONFIG['departments']),key='u_dep');titles=[f['title'] for d,f in forms_flat() if d==dep];form=get_form(dep,st.selectbox('Form',titles,key='u_form'))
-    template=ROOT/'excel_templates'/f"{form['id']}.xlsx"
-    st.download_button('Download Excel Template',template.read_bytes(),file_name=template.name)
-    upload=st.file_uploader('Upload completed Excel',type=['xlsx'])
-    if upload and st.button('Import Excel',type='primary'):
-        try:
-            parsed=parse_excel(upload,dep,form)
-            for d,shift,values in parsed:append_record(dep,form,d,shift,values)
-            st.success(f'{len(parsed)} inspections imported.')
-        except Exception as e:st.error(str(e))
-
+        a,b=st.columns(2);d=a.date_input('Inspection Date');shift=b.selectbox('Shift',SHIFTS);vals={};cs=st.columns(3)
+        for i,p in enumerate(form.get('metadata',[])+form['parameters']):
+            with cs[i%3]:vals[p['id']]=widget(p,p['id'])
+        go=st.form_submit_button('Save Inspection',type='primary',use_container_width=True)
+    if go:save_record(dep,form,d,shift,vals);st.success('Inspection saved.')
+def upload():
+    st.subheader('Excel Upload');dep=st.selectbox('Department',departments());ts=[f['title'] for d,f in forms() if d==dep];form=get_form(dep,st.selectbox('Form',ts));template=ROOT/'excel_templates'/f"{form['id']}.xlsx";st.download_button('Download Excel Template',template.read_bytes(),file_name=template.name);up=st.file_uploader('Upload completed Excel',type='xlsx')
+    if up and st.button('Import'):
+        rows=parse_excel(up,form)
+        for d,sh,v in rows:save_record(dep,form,d,sh,v)
+        st.success(f'{len(rows)} inspections imported.')
+def analysis(day=False):
+    st.subheader('Day-wise Analysis' if day else 'Observation-wise Control Charts')
+    if day:st.info('Exactly one point per date. Subgrouped parameters use the average of subgroup averages for that date; daily I-MR is used.')
+    dep=st.selectbox('Department',departments());ts=[f['title'] for d,f in forms() if d==dep];form=get_form(dep,st.selectbox('Form',ts));its=items(form);labels=[i[1] for i in its];it=its[labels.index(st.selectbox('Parameter / Subgroup',labels))];start=end=None
+    if day:a,b=st.columns(2);start=a.date_input('From Date',date.today().replace(day=1));end=b.date_input('To Date',date.today())
+    r=series(form,it,day,start,end)
+    if not r:st.warning('No data.');return
+    x,v,unit=r;calc=xbarr(v) if it[0]=='g' and not day else imr(v)
+    if not calc:st.warning('At least two observations/dates are required.');return
+    vals,cl,u,l,ranges,rcl,ru,rl=calc;st.plotly_chart(fig(f'{it[1]} - {"Day-wise" if day else "Observation-wise"}',x,vals,cl,u,l,unit),use_container_width=True)
+    if not day:st.plotly_chart(fig(f'{it[1]} - Range',x[1:] if len(x)==len(ranges)+1 else x[:len(ranges)],ranges,rcl,ru,rl,unit),use_container_width=True)
 def data_page():
-    st.subheader('Data & Specification Limits')
-    df=readings();st.metric('Stored parameter rows',len(df));st.dataframe(df.tail(200),use_container_width=True,hide_index=True)
-    st.download_button('Download All Readings CSV',df.to_csv(index=False).encode(),file_name='quality_readings.csv')
-    st.divider();st.write('Specification limits')
-    lim=limits();edit=st.data_editor(lim,num_rows='dynamic',use_container_width=True)
-    if st.button('Save Specification Limits'):
-        write_csv(LIMITS_PATH,edit,'Update SPC specification limits');st.success('Specification limits saved.')
+    st.subheader('Data & Limits');x=readings();x=x[x.Department.isin(departments())];st.dataframe(x.tail(300),use_container_width=True);st.download_button('Download Readings',x.to_csv(index=False).encode(),file_name='quality_readings.csv')
+    lim=pd.read_csv(LIMITS_PATH);edit=st.data_editor(lim,num_rows='dynamic',use_container_width=True)
+    if st.button('Save Limits'):write_csv(LIMITS_PATH,edit,'Update limits');st.success('Saved.')
 
-st.markdown('<div class="hero"><h2>Manufacturing SPC & Daily Analysis</h2><div>Observation-wise control charts, day-wise averages, Excel upload and firing-zone temperature monitoring</div></div>',unsafe_allow_html=True)
+if not st.session_state.get('logged'):login();st.stop()
+with st.sidebar:
+    st.success(st.session_state.user['display_name']);st.caption('Plant: '+st.session_state.user['plant'])
+    if st.button('Logout',use_container_width=True):st.session_state.clear();st.rerun()
+st.markdown('<div class="hero"><h2>Manufacturing SPC & Daily Analysis</h2><div>Observation-wise charts, one-point-per-day analysis, Excel uploads and firing-zone monitoring</div></div>',unsafe_allow_html=True)
 page=st.sidebar.radio('Page',['Manual Entry','Excel Upload','Observation-wise Analysis','Day-wise Analysis','Data & Limits'])
-if page=='Manual Entry':entry_page()
-elif page=='Excel Upload':upload_page()
-elif page=='Observation-wise Analysis':analysis_page(False)
-elif page=='Day-wise Analysis':analysis_page(True)
-else:data_page()
+{'Manual Entry':entry,'Excel Upload':upload,'Observation-wise Analysis':lambda:analysis(False),'Day-wise Analysis':lambda:analysis(True),'Data & Limits':data_page}[page]()
