@@ -1,13 +1,21 @@
-# Manufacturing SPC & Daily Analysis with Login
+# Manufacturing SPC & Daily Analysis Portal
 
-Upload all files preserving folder structure. Main file: `app.py`.
+Upload the entire package to GitHub without changing the folder structure. Main file: `app.py`.
 
-Default login credentials (change before use):
+## Plants
+- Maliya
+- Unit 1
+- Unit 2
+- Unit 3
+
+## Default credentials
 - Plant admin: `plant_admin` / `ChangeMe@2026`
 - Slip House: `sliphouse_user` / `SlipHouse@2026`
 - Press: `press_user` / `Press@2026`
 - Kiln: `kiln_user` / `Kiln@2026`
 
-Passwords are stored as SHA-256 hashes in `config/users.json`.
+## Press Excel upload
+The app accepts `press_green_tile_thickness_bd.xlsx` exactly as supplied, including blank spacer columns, mixed time formats, `B.D 13`, `Bulk Density 13`, `Bulk Density 14`, and Remarks.
 
-Shared GitHub data requires Streamlit secrets: `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO`, `GITHUB_BRANCH`.
+## Shared GitHub storage
+Set `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO`, and `GITHUB_BRANCH` in Streamlit secrets.
