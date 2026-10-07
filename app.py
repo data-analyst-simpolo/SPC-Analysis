@@ -178,28 +178,22 @@ def parse_press_excel(upload):
     source = pd.read_excel(upload, sheet_name="Quality Entry", engine="openpyxl").dropna(how="all")
     source = source.loc[:, ~source.columns.astype(str).str.startswith("Unnamed:")]
     aliases = {
-        "date": "inspection_date",
-        "time": "inspection_time",
-        "supopename": "supervisor_operator_name",
-        "pcrno": "press_number",
-        "finalsize": "tile_size",
-        "batchnumber": "batch_number",
-        "bodycode": "body_code",
-        "silonumber": "silo_number",
-        "grlengthmm": "green_length_mm",
-        "grweidthmm": "green_width_mm",
-        "greenwidthmm": "green_width_mm",
-        "greendiagonal1mm": "green_diagonal_1_mm",
-        "greendiagonal2mm": "green_diagonal_2_mm",
-        "bulkdensity13": "bulk_density_13",
-        "bulkdensity14": "bulk_density_14",
-        "remarkscommentsifany": "remarks",
+        "date": "inspection_date", "time": "inspection_time",
+        "supopename": "supervisor_operator_name", "pcrno": "press_number",
+        "finalsize": "tile_size", "batchnumber": "batch_number",
+        "bodycode": "body_code", "silonumber": "silo_number",
+        "grlengthmm": "green_length_mm", "grweidthmm": "green_width_mm",
+        "greenwidthmm": "green_width_mm", "greendiagonal1mm": "green_diagonal_1_mm",
+        "greendiagonal2mm": "green_diagonal_2_mm", "remarkscommentsifany": "remarks",
     }
-    # Existing operational workbook TH.2-TH.13 represents positions 1-12.
-    # B.D 2-B.D 13 represents positions 1-12. Trailing named fields are 13 and 14.
+    # TH.2-TH.13 = one Thickness subgroup with 12 samples.
+    # B.D 2-B.D 13 = one Bulk Density subgroup with 12 samples.
     for excel_number in range(2, 14):
-        aliases[normalize(f"TH. {excel_number}")] = f"thickness_{excel_number - 1}"
-        aliases[normalize(f"B.D {excel_number}")] = f"bulk_density_{excel_number - 1}"
+        aliases[normalize(f"TH. {excel_number}")] = f"thickness_sample_{excel_number - 1}"
+        aliases[normalize(f"B.D {excel_number}")] = f"bulk_density_sample_{excel_number - 1}"
+    # Optional explicitly named trailing readings extend the subgroup dynamically.
+    aliases["bulkdensity13"] = "bulk_density_sample_13"
+    aliases["bulkdensity14"] = "bulk_density_sample_14"
 
     mapped = {}
     for source_column in source.columns:
@@ -215,34 +209,34 @@ def parse_press_excel(upload):
         raise ValueError("Date column was not found in the Press workbook.")
 
     records = []
-    numeric_ids = (
-        ["green_length_mm", "green_width_mm", "green_diagonal_1_mm", "green_diagonal_2_mm"]
-        + [f"thickness_{i}" for i in range(1, 15)]
-        + [f"bulk_density_{i}" for i in range(1, 15)]
-    )
-    metadata_ids = [
-        "inspection_time", "supervisor_operator_name", "press_number", "tile_size",
-        "batch_number", "body_code", "silo_number", "remarks"
-    ]
+    metadata_ids = ["inspection_time", "supervisor_operator_name", "press_number", "tile_size",
+                    "batch_number", "body_code", "silo_number", "remarks"]
+    single_ids = ["green_length_mm", "green_width_mm", "green_diagonal_1_mm", "green_diagonal_2_mm"]
     for _, row in frame.iterrows():
         inspection_date = pd.to_datetime(scalar(row.get("inspection_date", "")), errors="coerce")
         if pd.isna(inspection_date):
             continue
-        values = {}
+        values = {"metadata": {}, "single": {}, "subgroups": {"thickness": [], "bulk_density": []}}
         for field_id in metadata_ids:
             value = scalar(row.get(field_id, ""))
             if value is None or pd.isna(value) or value == "":
                 continue
-            values[field_id] = normalize_time(value) if field_id == "inspection_time" else str(value).strip()
-        for parameter_id in numeric_ids:
+            values["metadata"][field_id] = normalize_time(value) if field_id == "inspection_time" else str(value).strip()
+        for parameter_id in single_ids:
             value = pd.to_numeric(scalar(row.get(parameter_id, "")), errors="coerce")
             if not pd.isna(value):
-                values[parameter_id] = float(value)
+                values["single"][parameter_id] = float(value)
+        for parameter_id in ("thickness", "bulk_density"):
+            readings_list = []
+            for sample_no in range(1, 15):
+                value = pd.to_numeric(scalar(row.get(f"{parameter_id}_sample_{sample_no}", "")), errors="coerce")
+                if not pd.isna(value):
+                    readings_list.append(float(value))
+            values["subgroups"][parameter_id] = readings_list
         records.append((inspection_date.date(), "Not provided", values))
     if not records:
         raise ValueError("No valid inspection rows were found in the Press workbook.")
     return records
-
 
 def parse_generic_excel(upload, form):
     source = pd.read_excel(upload, sheet_name="Quality Entry", engine="openpyxl").dropna(how="all")
@@ -278,30 +272,40 @@ def append_record(department, form, inspection_date, shift, values):
     record_id = str(uuid.uuid4())
     created_at = datetime.now().isoformat(timespec="seconds")
     rows = []
-    for field in form.get("metadata", []) + form["parameters"]:
-        value = values.get(field["id"], "")
+    metadata_values = values.get("metadata", values)
+    single_values = values.get("single", values)
+    subgroup_values = values.get("subgroups", {})
+    for field in form.get("metadata", []):
+        value = metadata_values.get(field["id"], "")
         if value is None or value == "":
             continue
-        is_number = field["type"] == "number"
-        rows.append({
-            "Record ID": record_id,
-            "Plant": st.session_state.plant,
-            "Department": department,
-            "Form ID": form["id"],
-            "Form Title": form["title"],
-            "Inspection Date": str(inspection_date),
-            "Shift": shift,
-            "Parameter ID": field["id"],
-            "Parameter": field["label"],
-            "Sample No": "",
-            "Value": float(value) if is_number else "",
-            "Text Value": "" if is_number else str(value),
-            "Unit": field.get("unit", ""),
-            "Created At": created_at,
-        })
-    updated = pd.concat([readings(), pd.DataFrame(rows)], ignore_index=True)
-    save_shared_csv(DATA_PATH, updated, "Append SPC inspection")
-
+        rows.append({"Record ID": record_id, "Plant": st.session_state.plant,
+                     "Department": department, "Form ID": form["id"], "Form Title": form["title"],
+                     "Inspection Date": str(inspection_date), "Shift": shift, "Parameter ID": field["id"],
+                     "Parameter": field["label"], "Sample No": "", "Value": "", "Text Value": str(value),
+                     "Unit": field.get("unit", ""), "Created At": created_at})
+    for parameter in form["parameters"]:
+        if parameter["type"] == "subgroup":
+            for sample_no, value in enumerate(subgroup_values.get(parameter["id"], []), start=1):
+                if value is None or pd.isna(value):
+                    continue
+                rows.append({"Record ID": record_id, "Plant": st.session_state.plant,
+                             "Department": department, "Form ID": form["id"], "Form Title": form["title"],
+                             "Inspection Date": str(inspection_date), "Shift": shift,
+                             "Parameter ID": parameter["id"], "Parameter": parameter["label"],
+                             "Sample No": sample_no, "Value": float(value), "Text Value": "",
+                             "Unit": parameter.get("unit", ""), "Created At": created_at})
+        else:
+            value = single_values.get(parameter["id"], "")
+            if value is None or value == "" or pd.isna(value):
+                continue
+            rows.append({"Record ID": record_id, "Plant": st.session_state.plant,
+                         "Department": department, "Form ID": form["id"], "Form Title": form["title"],
+                         "Inspection Date": str(inspection_date), "Shift": shift,
+                         "Parameter ID": parameter["id"], "Parameter": parameter["label"],
+                         "Sample No": "", "Value": float(value), "Text Value": "",
+                         "Unit": parameter.get("unit", ""), "Created At": created_at})
+    save_shared_csv(DATA_PATH, pd.concat([readings(), pd.DataFrame(rows)], ignore_index=True), "Append SPC inspection")
 
 def manual_entry_page():
     st.subheader("Manual Inspection Entry")
@@ -310,23 +314,32 @@ def manual_entry_page():
         date_col, shift_col = st.columns(2)
         inspection_date = date_col.date_input("Inspection Date")
         shift = shift_col.selectbox("Shift", SHIFTS)
-        values = {}
-        fields = form.get("metadata", []) + form["parameters"]
-        columns = st.columns(3)
-        for index, field in enumerate(fields):
-            with columns[index % 3]:
-                key = f"manual_{form['id']}_{field['id']}"
-                if field["type"] == "number":
-                    values[field["id"]] = st.number_input(field["label"], value=None, key=key)
-                elif field["type"] == "time":
-                    values[field["id"]] = st.time_input(field["label"], value=None, key=key)
-                else:
-                    values[field["id"]] = st.text_input(field["label"], key=key)
+        values = {"metadata": {}, "single": {}, "subgroups": {}}
+        for field in form.get("metadata", []):
+            key = f"manual_{form['id']}_{field['id']}"
+            values["metadata"][field["id"]] = st.time_input(field["label"], value=None, key=key) if field["type"] == "time" else st.text_input(field["label"], key=key)
+        for parameter in form["parameters"]:
+            if parameter["type"] == "subgroup":
+                st.markdown(f"#### {parameter['label']} subgroup")
+                st.caption("All readings entered below form one sampling observation.")
+                sample_count = st.number_input(f"Number of {parameter['label']} samples", min_value=2,
+                                               max_value=parameter.get("max_samples", 14), value=12,
+                                               step=1, key=f"count_{parameter['id']}")
+                columns = st.columns(6)
+                values["subgroups"][parameter["id"]] = [
+                    columns[(sample_no - 1) % 6].number_input(
+                        f"Sample {sample_no}", value=None,
+                        key=f"manual_{parameter['id']}_{sample_no}"
+                    ) for sample_no in range(1, int(sample_count) + 1)
+                ]
+            else:
+                values["single"][parameter["id"]] = st.number_input(
+                    parameter["label"], value=None, key=f"manual_{parameter['id']}"
+                )
         submitted = st.form_submit_button("Save Inspection", type="primary", use_container_width=True)
     if submitted:
         append_record(department, form, inspection_date, shift, values)
         st.success("Inspection saved successfully.")
-
 
 def excel_upload_page():
     st.subheader("Excel Upload")
@@ -350,31 +363,27 @@ def excel_upload_page():
 
 def parameter_data(form, parameter):
     frame = readings()
-    common = (
-        frame["Plant"].astype(str).eq(st.session_state.plant)
-        & frame["Form ID"].astype(str).eq(form["id"])
-    )
+    common = (frame["Plant"].astype(str).eq(st.session_state.plant)
+              & frame["Form ID"].astype(str).eq(form["id"]))
     direct = frame[common & frame["Parameter ID"].astype(str).eq(parameter["id"])].copy()
-
-    # Backward compatibility for the previous subgroup-storage version.
-    position_match = re.fullmatch(r"(thickness|bulk_density)_(\d+)", parameter["id"])
-    if position_match:
-        legacy_id, sample_number = position_match.group(1), int(position_match.group(2))
-        sample_values = pd.to_numeric(frame["Sample No"], errors="coerce")
-        legacy = frame[
-            common
-            & frame["Parameter ID"].astype(str).eq(legacy_id)
-            & sample_values.eq(sample_number)
-        ].copy()
-        direct = pd.concat([direct, legacy], ignore_index=True)
-
+    # Backward compatibility with the prior individual-position storage.
+    if parameter["type"] == "subgroup":
+        old_parts = []
+        for sample_no in range(1, parameter.get("max_samples", 14) + 1):
+            legacy = frame[common & frame["Parameter ID"].astype(str).eq(f"{parameter['id']}_{sample_no}")].copy()
+            if not legacy.empty:
+                legacy["Sample No"] = sample_no
+                legacy["Parameter ID"] = parameter["id"]
+                old_parts.append(legacy)
+        if old_parts:
+            direct = pd.concat([direct] + old_parts, ignore_index=True)
     direct["Numeric Value"] = pd.to_numeric(direct["Value"], errors="coerce")
+    direct["Sample Number"] = pd.to_numeric(direct["Sample No"], errors="coerce")
     direct["Date"] = pd.to_datetime(direct["Inspection Date"], errors="coerce").dt.date
     direct["Created"] = pd.to_datetime(direct["Created At"], errors="coerce")
     return direct.dropna(subset=["Numeric Value", "Date"]).sort_values(
-        ["Date", "Created", "Record ID"], kind="stable"
+        ["Date", "Created", "Record ID", "Sample Number"], kind="stable"
     )
-
 
 def imr(values):
     x = pd.Series(values, dtype=float).dropna().reset_index(drop=True)
@@ -388,6 +397,38 @@ def imr(values):
         x, center, center + 2.66 * mr_bar, center - 2.66 * mr_bar,
         moving_ranges, mr_bar, 3.267 * mr_bar, 0.0, sigma_within
     )
+
+
+def xbar_r(subgroups):
+    rows = [np.asarray(row, dtype=float) for row in subgroups if len(row) >= 2]
+    if len(rows) < 2:
+        return None
+    sizes = [len(row) for row in rows]
+    if len(set(sizes)) != 1:
+        return None
+    n = sizes[0]
+    constants = {
+        2:(1.880,0.000,3.267,1.128),3:(1.023,0.000,2.574,1.693),4:(0.729,0.000,2.282,2.059),
+        5:(0.577,0.000,2.114,2.326),6:(0.483,0.000,2.004,2.534),7:(0.419,0.076,1.924,2.704),
+        8:(0.373,0.136,1.864,2.847),9:(0.337,0.184,1.816,2.970),10:(0.308,0.223,1.777,3.078),
+        11:(0.285,0.256,1.744,3.173),12:(0.266,0.284,1.716,3.258),13:(0.249,0.308,1.692,3.336),
+        14:(0.235,0.329,1.671,3.407)
+    }
+    if n not in constants:
+        return None
+    a2,d3,d4,d2=constants[n]
+    means=np.array([row.mean() for row in rows]);ranges=np.array([row.max()-row.min() for row in rows])
+    mean_bar=means.mean();range_bar=ranges.mean();sigma=range_bar/d2 if range_bar>0 else 0.0
+    return means,mean_bar,mean_bar+a2*range_bar,mean_bar-a2*range_bar,ranges,range_bar,d4*range_bar,d3*range_bar,sigma,n
+
+
+def subgroup_observations(frame):
+    observations=[];dates=[]
+    for (_, inspection_date), group in frame.groupby(["Record ID", "Date"], sort=False):
+        values=group.sort_values("Sample Number")["Numeric Value"].dropna().tolist()
+        if len(values)>=2:
+            observations.append(values);dates.append(inspection_date)
+    return observations,dates
 
 
 def control_chart(title, labels, values, center, ucl, lcl, unit):
@@ -407,22 +448,14 @@ def control_chart(title, labels, values, center, ucl, lcl, unit):
         )
     figure.update_layout(
         title=title, xaxis_title="Observation / Inspection Date",
-        yaxis_title=unit, height=430, margin=dict(bottom=105)
+        yaxis_title=unit, height=430, margin=dict(b=105)
     )
     figure.update_xaxes(tickangle=-45, automargin=True)
     return figure
 
 
 def spec_group_label(parameter):
-    group = parameter.get("spec_group", parameter["id"])
-    if group == "thickness_all":
-        return "Common specification for Thickness 1-14"
-    if group == "bulk_density_all":
-        return "Common specification for Bulk Density 1-14"
-    if group == "green_diagonal":
-        return "Common specification for Green Diagonal 1-2"
-    return f"Specification for {parameter['label']}"
-
+    return f"Specification for {parameter['label']} (applies to every sample in the subgroup)"
 
 def load_saved_limits(department, form, parameter):
     group_id = parameter.get("spec_group", parameter["id"])
@@ -470,84 +503,72 @@ def save_limits(department, form, parameter, lsl, usl):
 def analysis_page(day_wise=False):
     st.subheader("Day-wise Analysis" if day_wise else "Observation-wise SPC & Capability")
     department, form = choose_form("day" if day_wise else "observation")
-
-    parameter_labels = [parameter["label"] for parameter in form["parameters"]]
-    selected_label = st.selectbox(
-        "Parameter",
-        parameter_labels,
-        key=f"{'day' if day_wise else 'observation'}_parameter",
-    )
-    # This separate statement fixes StreamlitDuplicateElementId. The selectbox is
-    # created exactly once, instead of being created repeatedly inside next().
+    parameter_labels = [p["label"] for p in form["parameters"]]
+    selected_label = st.selectbox("Parameter", parameter_labels,
+                                  key=f"{'day' if day_wise else 'observation'}_parameter")
     parameter = next(p for p in form["parameters"] if p["label"] == selected_label)
-
     frame = parameter_data(form, parameter)
-    if day_wise:
-        from_col, to_col = st.columns(2)
-        from_date = from_col.date_input("From Date", date.today().replace(day=1), key="day_from")
-        to_date = to_col.date_input("To Date", date.today(), key="day_to")
-        frame = frame[(frame["Date"] >= from_date) & (frame["Date"] <= to_date)]
-        frame = frame.groupby("Date", as_index=False)["Numeric Value"].mean()
-        labels = frame["Date"].astype(str).tolist()
-        values = frame["Numeric Value"].tolist()
-    else:
-        labels = [
-            f"Observation {number}<br>{inspection_date.strftime('%d-%b-%Y')}"
-            for number, inspection_date in enumerate(frame["Date"], start=1)
-        ]
-        values = frame["Numeric Value"].tolist()
-
-    result = imr(values)
-    if not result:
-        st.warning("At least two observations or selected dates are required.")
+    if frame.empty:
+        st.warning("No usable data are available for this parameter.")
         return
-    values, center, ucl, lcl, ranges, r_center, r_ucl, r_lcl, sigma = result
 
-    saved_lsl, saved_usl = load_saved_limits(department, form, parameter)
-    st.markdown(f"<div class='note'>{spec_group_label(parameter)}</div>", unsafe_allow_html=True)
-    lsl_col, usl_col = st.columns(2)
-    lsl = lsl_col.number_input(
-        "LSL", value=saved_lsl,
-        key=f"lsl_{st.session_state.plant}_{form['id']}_{parameter.get('spec_group', parameter['id'])}_{day_wise}",
-    )
-    usl = usl_col.number_input(
-        "USL", value=saved_usl,
-        key=f"usl_{st.session_state.plant}_{form['id']}_{parameter.get('spec_group', parameter['id'])}_{day_wise}",
-    )
+    if parameter["type"] == "subgroup":
+        subgroups, subgroup_dates = subgroup_observations(frame)
+        if day_wise:
+            daily = pd.DataFrame({"Date": subgroup_dates,
+                                  "Subgroup Average": [np.mean(row) for row in subgroups]})
+            daily = daily.groupby("Date", as_index=False)["Subgroup Average"].mean()
+            labels = daily["Date"].astype(str).tolist()
+            result = imr(daily["Subgroup Average"].tolist())
+            method = "Daily I-MR of average subgroup averages"
+        else:
+            result = xbar_r(subgroups)
+            labels = [f"Observation {i}<br>{d.strftime('%d-%b-%Y')}" for i,d in enumerate(subgroup_dates,1)]
+            method = f"X-bar R; each point is one sampling subgroup"
+    else:
+        if day_wise:
+            from_col,to_col=st.columns(2)
+            from_date=from_col.date_input("From Date",date.today().replace(day=1),key="day_from")
+            to_date=to_col.date_input("To Date",date.today(),key="day_to")
+            daily=frame[(frame["Date"]>=from_date)&(frame["Date"]<=to_date)].groupby("Date",as_index=False)["Numeric Value"].mean()
+            labels=daily["Date"].astype(str).tolist();result=imr(daily["Numeric Value"].tolist())
+        else:
+            labels=[f"Observation {i}<br>{d.strftime('%d-%b-%Y')}" for i,d in enumerate(frame["Date"],1)]
+            result=imr(frame["Numeric Value"].tolist())
+        method="I-MR"
 
+    if not result:
+        st.warning("At least two complete observations or dates are required.")
+        return
+    if parameter["type"] == "subgroup" and not day_wise:
+        values,center,ucl,lcl,ranges,r_center,r_ucl,r_lcl,sigma,n=result
+        st.caption(f"{method}. Subgroup size detected: {n} samples per observation.")
+    else:
+        values,center,ucl,lcl,ranges,r_center,r_ucl,r_lcl,sigma=result
+        st.caption(method)
+
+    saved_lsl,saved_usl=load_saved_limits(department,form,parameter)
+    st.markdown(f"<div class='note'>{spec_group_label(parameter)}</div>",unsafe_allow_html=True)
+    lsl_col,usl_col=st.columns(2)
+    unique=f"{st.session_state.plant}_{form['id']}_{parameter['id']}_{day_wise}"
+    lsl=lsl_col.number_input("LSL",value=saved_lsl,key=f"lsl_{unique}")
+    usl=usl_col.number_input("USL",value=saved_usl,key=f"usl_{unique}")
     if lsl is not None and usl is not None:
-        if usl <= lsl:
+        if usl<=lsl:
             st.error("USL must be greater than LSL.")
-        elif sigma <= 0:
+        elif sigma<=0:
             st.warning("Cp and Cpk require measurable process variation.")
         else:
-            cp = (usl - lsl) / (6 * sigma)
-            cpk = min((usl - center) / (3 * sigma), (center - lsl) / (3 * sigma))
-            metric_a, metric_b, metric_c = st.columns(3)
-            metric_a.metric("Cp", f"{cp:.3f}")
-            metric_b.metric("Cpk", f"{cpk:.3f}")
-            metric_c.metric("Process Mean", f"{center:.3f}")
-            if st.button(
-                "Save Common Specification Limits",
-                key=f"save_specs_{parameter.get('spec_group', parameter['id'])}_{day_wise}",
-            ):
-                save_limits(department, form, parameter, lsl, usl)
-                st.success("Specification limits saved and will apply to all parameters in this group.")
+            cp=(usl-lsl)/(6*sigma);cpk=min((usl-center)/(3*sigma),(center-lsl)/(3*sigma))
+            a,b,c=st.columns(3);a.metric("Cp",f"{cp:.3f}");b.metric("Cpk",f"{cpk:.3f}");c.metric("Process Mean",f"{center:.3f}")
+            if st.button("Save Specification Limits",key=f"save_{unique}"):
+                save_limits(department,form,parameter,lsl,usl);st.success("Specification limits saved for this parameter.")
 
-    st.plotly_chart(
-        control_chart(parameter["label"], labels, values, center, ucl, lcl, parameter.get("unit", "")),
-        use_container_width=True,
-    )
+    title=f"{parameter['label']} - {'Day-wise' if day_wise else 'Observation-wise'}"
+    st.plotly_chart(control_chart(title,labels,values,center,ucl,lcl,parameter.get("unit","")),use_container_width=True)
     if not day_wise:
-        range_labels = labels[1:] if len(labels) == len(ranges) + 1 else labels[:len(ranges)]
-        st.plotly_chart(
-            control_chart(
-                f"{parameter['label']} - Moving Range",
-                range_labels, ranges, r_center, r_ucl, r_lcl, parameter.get("unit", ""),
-            ),
-            use_container_width=True,
-        )
-
+        range_labels=labels[1:] if len(labels)==len(ranges)+1 else labels[:len(ranges)]
+        st.plotly_chart(control_chart(f"{parameter['label']} - Range",range_labels,ranges,r_center,r_ucl,r_lcl,parameter.get("unit","")),use_container_width=True)
 
 def data_page():
     frame = readings()
