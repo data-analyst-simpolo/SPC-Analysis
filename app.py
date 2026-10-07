@@ -13,7 +13,7 @@ CONFIG=json.loads((ROOT/'config/forms.json').read_text(encoding='utf-8'))
 USERS=json.loads((ROOT/'config/users.json').read_text(encoding='utf-8'))['users']
 DATA=ROOT/'data/quality_readings.csv'; LIMITS=ROOT/'data/spec_limits.csv'
 COLS=['Record ID','Plant','Department','Form ID','Form Title','Inspection Date','Shift','Parameter ID','Parameter','Value','Text Value','Unit','Created At']
-PLANTS=['Maliya','Tirupati Unit 1','Tirupati Unit 2','Tirupati Unit 3']
+PLANTS=['Maliya','Unit 1','Unit 2','Unit 3']
 SHIFTS=['A','B','C','General','Not provided']
 st.markdown('''<style>.stApp{background:#f5faf6}.block-container{max-width:1450px;padding-top:1.1rem}.hero{background:linear-gradient(125deg,#102d20,#16803d);color:white;border-radius:22px;padding:1.3rem 1.55rem;margin-bottom:1rem;box-shadow:0 12px 30px rgba(16,45,32,.14)}.login{max-width:570px;margin:3vh auto;background:white;border:1px solid #d7e5db;border-radius:24px;padding:1.5rem;box-shadow:0 20px 52px rgba(16,45,32,.15)}.brand{background:linear-gradient(125deg,#102d20,#16803d);color:white;border-radius:18px;padding:1.25rem;margin-bottom:1rem}.chip{display:inline-block;background:#e8f7eb;color:#166534;border-radius:999px;padding:.28rem .7rem;font-weight:800;font-size:.75rem}.stButton>button,.stDownloadButton>button{border-radius:10px}</style>''',unsafe_allow_html=True)
 for k in ('GITHUB_TOKEN','GITHUB_OWNER','GITHUB_REPO','GITHUB_BRANCH'):
