@@ -20,7 +20,7 @@ CONFIG = json.loads((ROOT / "config/forms.json").read_text(encoding="utf-8"))
 USERS = json.loads((ROOT / "config/users.json").read_text(encoding="utf-8"))["users"]
 DATA_PATH = ROOT / "data/quality_readings.csv"
 LIMITS_PATH = ROOT / "data/spec_limits.csv"
-PLANTS = ["Maliya", "Unit 1", "Unit 2", "Unit 3"]
+PLANTS = ["Maliya", "Tirupati Unit 1", "Tirupati Unit 2", "Tirupati Unit 3"]
 SHIFTS = ["A", "B", "C", "General", "Not provided"]
 DATA_COLUMNS = [
     "Record ID", "Plant", "Department", "Form ID", "Form Title",
