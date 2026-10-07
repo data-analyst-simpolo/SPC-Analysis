@@ -1,0 +1,24 @@
+{
+  "tool": "artifact-validator",
+  "schemaVersion": "2.0",
+  "validatorVersion": "3.2.3",
+  "result": "valid",
+  "exitCode": 0,
+  "input": {
+    "path": "/mnt/data/fixed_spc_app/excel_templates/kiln_firing_zone_temperature.xlsx",
+    "sha256": "aa1617f9d78ff16fc81ea983cff5808fb056615bce32108a750d71d49c0054cf",
+    "sizeBytes": 5712,
+    "kind": "xlsx"
+  },
+  "output": null,
+  "backup": null,
+  "repair": null,
+  "packageError": null,
+  "summary": {
+    "errorCount": 0,
+    "warningCount": 0,
+    "repairableCount": 0,
+    "issueCount": 0
+  },
+  "issues": []
+}
