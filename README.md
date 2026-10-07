@@ -1,21 +1,24 @@
-# Manufacturing SPC & Daily Analysis Portal
+# Manufacturing SPC Portal - Subgroup and Capability Version
 
-Upload the entire package to GitHub without changing the folder structure. Main file: `app.py`.
+## Correct Press logic
+- Thickness is one parameter.
+- Each Press inspection contributes one Thickness observation containing 12 samples.
+- Bulk Density is one parameter.
+- Each Press inspection contributes one Bulk Density observation containing 12 samples.
+- The app uses X-bar R for observation-wise Thickness and Bulk Density analysis with subgroup size n=12.
+- The supplied Press workbook maps TH.2-TH.13 to Thickness samples 1-12 and B.D 2-B.D 13 to Bulk Density samples 1-12.
+- The separate trailing Bulk Density 13 and Bulk Density 14 columns are preserved by the importer but are not mixed into the 12-sample subgroup.
+
+## Capability
+The analysis page accepts LSL and USL and displays Cp and Cpk. For n=12 subgroups, within-process sigma is estimated as R-bar / d2, where d2=3.258.
 
 ## Plants
-- Maliya
-- Unit 1
-- Unit 2
-- Unit 3
+Maliya, Tirupati Unit 1, Tirupati Unit 2, Tirupati Unit 3.
 
 ## Default credentials
-- Plant admin: `plant_admin` / `ChangeMe@2026`
-- Slip House: `sliphouse_user` / `SlipHouse@2026`
-- Press: `press_user` / `Press@2026`
-- Kiln: `kiln_user` / `Kiln@2026`
+- plant_admin / ChangeMe@2026
+- sliphouse_user / SlipHouse@2026
+- press_user / Press@2026
+- kiln_user / Kiln@2026
 
-## Press Excel upload
-The app accepts `press_green_tile_thickness_bd.xlsx` exactly as supplied, including blank spacer columns, mixed time formats, `B.D 13`, `Bulk Density 13`, `Bulk Density 14`, and Remarks.
-
-## Shared GitHub storage
-Set `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO`, and `GITHUB_BRANCH` in Streamlit secrets.
+Upload all files preserving the folder structure. Main file: app.py.
