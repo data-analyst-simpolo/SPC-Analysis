@@ -1,0 +1,561 @@
+{
+  "departments": {
+    "Slip House & Spray Dryer": {
+      "forms": [
+        {
+          "id": "slip_house_process_checks",
+          "title": "Slip House & Spray Dryer - Process Checks",
+          "metadata": [
+            {
+              "id": "operator_name",
+              "label": "Operator Name",
+              "type": "text"
+            },
+            {
+              "id": "inspection_time",
+              "label": "Inspection Time",
+              "type": "time"
+            }
+          ],
+          "parameters": [
+            {
+              "id": "slip_density",
+              "label": "Slip Density",
+              "type": "number",
+              "unit": "g/cc"
+            },
+            {
+              "id": "slip_viscosity",
+              "label": "Slip Viscosity",
+              "type": "number",
+              "unit": "sec"
+            },
+            {
+              "id": "residue_45_micron",
+              "label": "Residue 45 Micron",
+              "type": "number",
+              "unit": "%"
+            },
+            {
+              "id": "spray_dryer_moisture",
+              "label": "Spray Dryer Moisture",
+              "type": "number",
+              "unit": "%"
+            }
+          ]
+        }
+      ]
+    },
+    "Press": {
+      "forms": [
+        {
+          "id": "press_green_tile_thickness_bd",
+          "title": "Press - Green Tile Thickness & Bulk Density",
+          "metadata": [
+            {
+              "id": "inspection_time",
+              "label": "Inspection Time",
+              "type": "time"
+            },
+            {
+              "id": "supervisor_operator_name",
+              "label": "Supervisor / Operator Name",
+              "type": "text"
+            },
+            {
+              "id": "press_number",
+              "label": "Press Number",
+              "type": "text"
+            },
+            {
+              "id": "tile_size",
+              "label": "Final Size",
+              "type": "text"
+            },
+            {
+              "id": "batch_number",
+              "label": "Batch Number",
+              "type": "text"
+            },
+            {
+              "id": "body_code",
+              "label": "Body Code",
+              "type": "text"
+            },
+            {
+              "id": "silo_number",
+              "label": "Silo Number",
+              "type": "text"
+            },
+            {
+              "id": "remarks",
+              "label": "Remarks (Comments if any)",
+              "type": "text"
+            }
+          ],
+          "parameters": [
+            {
+              "id": "green_length_mm",
+              "label": "Green Length",
+              "type": "number",
+              "unit": "mm"
+            },
+            {
+              "id": "green_width_mm",
+              "label": "Green Width",
+              "type": "number",
+              "unit": "mm"
+            },
+            {
+              "id": "green_diagonal_1_mm",
+              "label": "Green Diagonal 1",
+              "type": "number",
+              "unit": "mm"
+            },
+            {
+              "id": "green_diagonal_2_mm",
+              "label": "Green Diagonal 2",
+              "type": "number",
+              "unit": "mm"
+            },
+            {
+              "id": "thickness_2",
+              "label": "Thickness 2",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "thickness_3",
+              "label": "Thickness 3",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "thickness_4",
+              "label": "Thickness 4",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "thickness_5",
+              "label": "Thickness 5",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "thickness_6",
+              "label": "Thickness 6",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "thickness_7",
+              "label": "Thickness 7",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "thickness_8",
+              "label": "Thickness 8",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "thickness_9",
+              "label": "Thickness 9",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "thickness_10",
+              "label": "Thickness 10",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "thickness_11",
+              "label": "Thickness 11",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "thickness_12",
+              "label": "Thickness 12",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "thickness_13",
+              "label": "Thickness 13",
+              "type": "number",
+              "unit": "mm",
+              "chart_group": "Thickness"
+            },
+            {
+              "id": "bulk_density_2",
+              "label": "Bulk Density 2",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_3",
+              "label": "Bulk Density 3",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_4",
+              "label": "Bulk Density 4",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_5",
+              "label": "Bulk Density 5",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_6",
+              "label": "Bulk Density 6",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_7",
+              "label": "Bulk Density 7",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_8",
+              "label": "Bulk Density 8",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_9",
+              "label": "Bulk Density 9",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_10",
+              "label": "Bulk Density 10",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_11",
+              "label": "Bulk Density 11",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_12",
+              "label": "Bulk Density 12",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_13",
+              "label": "Bulk Density 13",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density"
+            },
+            {
+              "id": "bulk_density_13_extra",
+              "label": "Bulk Density 13 (Additional)",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density Additional"
+            },
+            {
+              "id": "bulk_density_14",
+              "label": "Bulk Density 14",
+              "type": "number",
+              "unit": "g/cc",
+              "chart_group": "Bulk Density Additional"
+            }
+          ]
+        }
+      ]
+    },
+    "Kiln": {
+      "forms": [
+        {
+          "id": "kiln_firing_zone_temperature",
+          "title": "Kiln - Firing Zone Temperature",
+          "metadata": [
+            {
+              "id": "operator_name",
+              "label": "Operator Name",
+              "type": "text"
+            },
+            {
+              "id": "kiln_number",
+              "label": "Kiln No.",
+              "type": "text"
+            },
+            {
+              "id": "kiln_name",
+              "label": "Kiln Name",
+              "type": "text"
+            },
+            {
+              "id": "hod_name",
+              "label": "HOD",
+              "type": "text"
+            },
+            {
+              "id": "inspection_time",
+              "label": "Inspection Time",
+              "type": "time"
+            }
+          ],
+          "parameters": [
+            {
+              "id": "temperature_k6",
+              "label": "K6 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_k8",
+              "label": "K8 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_k10",
+              "label": "K10 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s11",
+              "label": "S11 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s13",
+              "label": "S13 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s15",
+              "label": "S15 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s26",
+              "label": "S26 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s28",
+              "label": "S28 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s30",
+              "label": "S30 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s32",
+              "label": "S32 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s34",
+              "label": "S34 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s36",
+              "label": "S36 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s38",
+              "label": "S38 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s40",
+              "label": "S40 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s42",
+              "label": "S42 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s44",
+              "label": "S44 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s46",
+              "label": "S46 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s48",
+              "label": "S48 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s50",
+              "label": "S50 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s52",
+              "label": "S52 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s54",
+              "label": "S54 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s25",
+              "label": "S25 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s27",
+              "label": "S27 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s29",
+              "label": "S29 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s31",
+              "label": "S31 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s33",
+              "label": "S33 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s35",
+              "label": "S35 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s37",
+              "label": "S37 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s39",
+              "label": "S39 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s41",
+              "label": "S41 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s43",
+              "label": "S43 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s45",
+              "label": "S45 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s47",
+              "label": "S47 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s49",
+              "label": "S49 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s51",
+              "label": "S51 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            },
+            {
+              "id": "temperature_s53",
+              "label": "S53 Temperature",
+              "type": "number",
+              "unit": "\u00b0C"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
