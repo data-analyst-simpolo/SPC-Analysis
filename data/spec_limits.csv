@@ -1,1 +1,2 @@
-Plant,Department,Form ID,Parameter ID,Parameter,LSL,USL,Target
+Department,Form ID,Parameter ID,LSL,USL,Target
+Press,press_green_tile_thickness_bd,bulk_density_2,1.97,2,1.98
