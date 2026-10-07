@@ -1,11 +1,31 @@
-import base64,io,pandas as pd,requests,streamlit as st
-PATH='data/quality_readings.csv';COLS=['Record ID','Plant','Department','Form ID','Form Title','Inspection Date','Shift','Parameter ID','Parameter','Value','Text Value','Unit','Created At']
-def h():return {'Authorization':f"Bearer {st.secrets['GITHUB_TOKEN']}",'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
-def u():return f"https://api.github.com/repos/{st.secrets['GITHUB_OWNER']}/{st.secrets['GITHUB_REPO']}/contents/{PATH}"
-def read_data():
- r=requests.get(u(),headers=h(),params={'ref':st.secrets.get('GITHUB_BRANCH','main')},timeout=30);r.raise_for_status();p=r.json();df=pd.read_csv(io.BytesIO(base64.b64decode(p['content'])))
- for c in COLS:
-  if c not in df:df[c]=''
- return df[COLS],p['sha']
-def append_rows(rows,msg):
- df,sha=read_data();df=pd.concat([df,pd.DataFrame(rows)],ignore_index=True);content=base64.b64encode(df[COLS].to_csv(index=False).encode()).decode();r=requests.put(u(),headers=h(),json={'message':msg,'content':content,'sha':sha,'branch':st.secrets.get('GITHUB_BRANCH','main')},timeout=30);r.raise_for_status()
+import base64, os, requests
+
+API='https://api.github.com'
+
+def configured():
+    return all(os.getenv(k) for k in ('GITHUB_TOKEN','GITHUB_OWNER','GITHUB_REPO'))
+
+def _headers():
+    return {'Authorization':f"Bearer {os.environ['GITHUB_TOKEN']}",'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+
+def _url(path):
+    return f"{API}/repos/{os.environ['GITHUB_OWNER']}/{os.environ['GITHUB_REPO']}/contents/{path}"
+
+def read_text(path):
+    if not configured(): return None
+    r=requests.get(_url(path),headers=_headers(),params={'ref':os.getenv('GITHUB_BRANCH','main')},timeout=30)
+    if r.status_code==404:return None
+    r.raise_for_status();return base64.b64decode(r.json()['content']).decode('utf-8')
+
+def write_text(path,text,message='Update SPC data'):
+    if not configured(): return False
+    url=_url(path);branch=os.getenv('GITHUB_BRANCH','main')
+    for _ in range(6):
+        get=requests.get(url,headers=_headers(),params={'ref':branch},timeout=30)
+        sha=None if get.status_code==404 else get.json().get('sha')
+        body={'message':message,'content':base64.b64encode(text.encode('utf-8')).decode('ascii'),'branch':branch}
+        if sha:body['sha']=sha
+        put=requests.put(url,headers=_headers(),json=body,timeout=30)
+        if put.status_code in (200,201):return True
+        if put.status_code not in (409,422):put.raise_for_status()
+    raise RuntimeError('GitHub file was busy. Retry once.')
