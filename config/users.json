@@ -3,7 +3,12 @@
     "plant_admin": {
       "password_sha256": "b97bea58b9e7c4ade04ffbe62352b3cede2218204b64a981372486d065dbcd62",
       "role": "admin",
-      "plant": "Maliya",
+      "plants": [
+        "Maliya",
+        "Unit 1",
+        "Unit 2",
+        "Unit 3"
+      ],
       "departments": [
         "*"
       ],
@@ -12,7 +17,12 @@
     "sliphouse_user": {
       "password_sha256": "f9b65d960fd24e1765de2e4a4ae3aef546c6dd5a364403e88a2e3f3b2726cb59",
       "role": "department",
-      "plant": "Maliya",
+      "plants": [
+       "Maliya",
+        "Unit 1",
+        "Unit 2",
+        "Unit 3"
+      ],
       "departments": [
         "Slip House & Spray Dryer"
       ],
@@ -21,7 +31,12 @@
     "press_user": {
       "password_sha256": "97b11e8f976707ac6db79c3a971749938f77f3f6df7097e046ec22ee769ec22b",
       "role": "department",
-      "plant": "Maliya",
+      "plants": [
+        "Maliya",
+        "Unit 1",
+        "Unit 2",
+        "Unit 3"
+      ],
       "departments": [
         "Press"
       ],
@@ -30,7 +45,12 @@
     "kiln_user": {
       "password_sha256": "cec16151cfdac53ef6b777f907925ef39ca2a026c1bc2b6c1a68ca26742e1420",
       "role": "department",
-      "plant": "Maliya",
+      "plants": [
+        "Maliya",
+        "Unit 1",
+        "Unit 2",
+        "Unit 3"
+      ],
       "departments": [
         "Kiln"
       ],
