@@ -1,24 +1,17 @@
-# Manufacturing SPC Portal - Subgroup and Capability Version
+# Manufacturing SPC & Daily Analysis - Final Robust Package
 
-## Correct Press logic
-- Thickness is one parameter.
-- Each Press inspection contributes one Thickness observation containing 12 samples.
-- Bulk Density is one parameter.
-- Each Press inspection contributes one Bulk Density observation containing 12 samples.
-- The app uses X-bar R for observation-wise Thickness and Bulk Density analysis with subgroup size n=12.
-- The supplied Press workbook maps TH.2-TH.13 to Thickness samples 1-12 and B.D 2-B.D 13 to Bulk Density samples 1-12.
-- The separate trailing Bulk Density 13 and Bulk Density 14 columns are preserved by the importer but are not mixed into the 12-sample subgroup.
+Upload every file and folder to the repository, preserving paths. `app.py` is the Streamlit main file.
 
-## Capability
-The analysis page accepts LSL and USL and displays Cp and Cpk. For n=12 subgroups, within-process sigma is estimated as R-bar / d2, where d2=3.258.
+The data CSV files are intentionally header-only. Do not replace them with blank zero-byte files.
 
-## Plants
-Maliya, Tirupati Unit 1, Tirupati Unit 2, Tirupati Unit 3.
+Streamlit secrets:
+GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH.
 
-## Default credentials
+Default users:
 - plant_admin / ChangeMe@2026
 - sliphouse_user / SlipHouse@2026
 - press_user / Press@2026
 - kiln_user / Kiln@2026
 
-Upload all files preserving the folder structure. Main file: app.py.
+The application safely handles missing, blank and header-only CSV files; creates GitHub files when absent; stores manual and Excel data; and filters charts by plant, department, parameter and Press size.
+
