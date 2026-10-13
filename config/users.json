@@ -5,9 +5,9 @@
       "role": "admin",
       "plants": [
         "Maliya",
-        "Unit 1",
-        "Unit 2",
-        "Unit 3"
+        "Tirupati Unit 1",
+        "Tirupati Unit 2",
+        "Tirupati Unit 3"
       ],
       "departments": [
         "*"
@@ -18,10 +18,10 @@
       "password_sha256": "f9b65d960fd24e1765de2e4a4ae3aef546c6dd5a364403e88a2e3f3b2726cb59",
       "role": "department",
       "plants": [
-       "Maliya",
-        "Unit 1",
-        "Unit 2",
-        "Unit 3"
+        "Maliya",
+        "Tirupati Unit 1",
+        "Tirupati Unit 2",
+        "Tirupati Unit 3"
       ],
       "departments": [
         "Slip House & Spray Dryer"
@@ -33,9 +33,9 @@
       "role": "department",
       "plants": [
         "Maliya",
-        "Unit 1",
-        "Unit 2",
-        "Unit 3"
+        "Tirupati Unit 1",
+        "Tirupati Unit 2",
+        "Tirupati Unit 3"
       ],
       "departments": [
         "Press"
@@ -47,9 +47,9 @@
       "role": "department",
       "plants": [
         "Maliya",
-        "Unit 1",
-        "Unit 2",
-        "Unit 3"
+        "Tirupati Unit 1",
+        "Tirupati Unit 2",
+        "Tirupati Unit 3"
       ],
       "departments": [
         "Kiln"
