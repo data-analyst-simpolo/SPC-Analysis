@@ -2781,3 +2781,7 @@ f2631dfe-6a65-46ec-80d8-7765c39ad057,Maliya,Press,press_green_tile_thickness_bd,
 4ad758ec-409e-4bca-a603-d52886c35ee9,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-15,A,bulk_density,Bulk Density,10,2.0,,g/cc,2026-10-15T12:26:25
 4ad758ec-409e-4bca-a603-d52886c35ee9,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-15,A,bulk_density,Bulk Density,11,2.0,,g/cc,2026-10-15T12:26:25
 4ad758ec-409e-4bca-a603-d52886c35ee9,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-15,A,bulk_density,Bulk Density,12,1.99,,g/cc,2026-10-15T12:26:25
+4bec2a64-5367-4df4-90ad-395f50990ff6,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-15,B,inspection_time,Inspection Time,,,06:00:00,,2026-10-15T12:51:57
+4bec2a64-5367-4df4-90ad-395f50990ff6,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-15,B,supervisor_operator_name,Supervisor / Operator Name,,,HEMANTH,,2026-10-15T12:51:57
+4bec2a64-5367-4df4-90ad-395f50990ff6,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-15,B,press_number,Press Number,,,02,,2026-10-15T12:51:57
+4bec2a64-5367-4df4-90ad-395f50990ff6,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-15,B,tile_size,Final Size / Thickness Grade,,,Not specified,,2026-10-15T12:51:57
