@@ -2505,3 +2505,28 @@ c4e39223-91de-4bd6-8708-924fefb59a4a,Maliya,Press,press_green_tile_thickness_bd,
 0b4da249-a111-45f3-93d4-9b38ece37a95,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,A,bulk_density,Bulk Density,10,1.98,,g/cc,2026-10-14T12:31:12
 0b4da249-a111-45f3-93d4-9b38ece37a95,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,A,bulk_density,Bulk Density,11,1.99,,g/cc,2026-10-14T12:31:12
 0b4da249-a111-45f3-93d4-9b38ece37a95,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,A,bulk_density,Bulk Density,12,1.97,,g/cc,2026-10-14T12:31:12
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,inspection_time,Inspection Time,,,10:35:00,,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,supervisor_operator_name,Supervisor / Operator Name,,,MUKUND/MEHUL,,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,press_number,Press Number,,,02,,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,tile_size,Final Size / Thickness Grade,,,1200 × 1200 × 9,,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,batch_number,Batch Number,,,132&128,,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,body_code,Body Code,,,SIPL011,,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,silo_number,Silo Number,,,19+20+24,,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,green_length_mm,Green Length,,1355.0,,mm,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,green_width_mm,Green Width,,1355.0,,mm,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,thickness,Thickness,1,9.5,,mm,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,thickness,Thickness,2,9.45,,mm,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,thickness,Thickness,3,9.41,,mm,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,thickness,Thickness,4,9.42,,mm,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,thickness,Thickness,5,9.46,,mm,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,thickness,Thickness,6,9.41,,mm,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,thickness,Thickness,7,9.45,,mm,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,thickness,Thickness,8,9.48,,mm,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,bulk_density,Bulk Density,1,2.0,,g/cc,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,bulk_density,Bulk Density,2,1.99,,g/cc,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,bulk_density,Bulk Density,3,1.99,,g/cc,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,bulk_density,Bulk Density,4,2.0,,g/cc,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,bulk_density,Bulk Density,5,1.99,,g/cc,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,bulk_density,Bulk Density,6,2.0,,g/cc,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,bulk_density,Bulk Density,7,2.0,,g/cc,2026-10-15T03:22:06
+ec1fcaa7-5e76-4631-82da-f327827a7939,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-14,B,bulk_density,Bulk Density,8,2.0,,g/cc,2026-10-15T03:22:06
