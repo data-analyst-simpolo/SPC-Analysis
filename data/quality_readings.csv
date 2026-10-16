@@ -2947,3 +2947,6 @@ dbe01dc7-a0e3-4836-a759-a661e9a9b743,Maliya,Press,press_green_tile_thickness_bd,
 18a48252-b2ad-44d7-b707-79e1c0b0f5ad,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-15,B,bulk_density,Bulk Density,10,2.0,,g/cc,2026-10-16T03:24:11
 18a48252-b2ad-44d7-b707-79e1c0b0f5ad,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-15,B,bulk_density,Bulk Density,11,2.01,,g/cc,2026-10-16T03:24:11
 18a48252-b2ad-44d7-b707-79e1c0b0f5ad,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-15,B,bulk_density,Bulk Density,12,1.99,,g/cc,2026-10-16T03:24:11
+bb4048e9-c75d-45ee-8ea5-de61ad3dd1a0,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-16,B,inspection_time,Inspection Time,,,12:30:00,,2026-10-16T03:24:47
+bb4048e9-c75d-45ee-8ea5-de61ad3dd1a0,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-16,B,supervisor_operator_name,Supervisor / Operator Name,,,MUKUND/SUGAM,,2026-10-16T03:24:47
+bb4048e9-c75d-45ee-8ea5-de61ad3dd1a0,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-16,B,tile_size,Final Size / Thickness Grade,,,Not specified,,2026-10-16T03:24:47
