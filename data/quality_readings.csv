@@ -3296,3 +3296,12 @@ b4e0c977-5b92-42e0-a28a-a8579542f931,Maliya,Press,press_green_tile_thickness_bd,
 6de94721-eedd-4679-b307-cff9362924ce,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,silo_number,Silo Number,,,2+20+31+51,,2026-10-17T03:31:01
 6de94721-eedd-4679-b307-cff9362924ce,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,green_length_mm,Green Length,,2668.0,,mm,2026-10-17T03:31:01
 6de94721-eedd-4679-b307-cff9362924ce,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,green_width_mm,Green Width,,1355.0,,mm,2026-10-17T03:31:01
+ebc66a9a-0350-4632-8d8f-c7013d24fc55,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,inspection_time,Inspection Time,,,07:10:00,,2026-10-17T03:31:04
+ebc66a9a-0350-4632-8d8f-c7013d24fc55,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,supervisor_operator_name,Supervisor / Operator Name,,,MUKUND/VIVEK,,2026-10-17T03:31:04
+ebc66a9a-0350-4632-8d8f-c7013d24fc55,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,press_number,Press Number,,,02,,2026-10-17T03:31:04
+ebc66a9a-0350-4632-8d8f-c7013d24fc55,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,tile_size,Final Size / Thickness Grade,,,1200 × 2400 × 9,,2026-10-17T03:31:04
+ebc66a9a-0350-4632-8d8f-c7013d24fc55,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,batch_number,Batch Number,,,132+135,,2026-10-17T03:31:04
+ebc66a9a-0350-4632-8d8f-c7013d24fc55,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,body_code,Body Code,,,SIPL011,,2026-10-17T03:31:04
+ebc66a9a-0350-4632-8d8f-c7013d24fc55,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,silo_number,Silo Number,,,2+20+31+51,,2026-10-17T03:31:04
+ebc66a9a-0350-4632-8d8f-c7013d24fc55,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,green_length_mm,Green Length,,2668.0,,mm,2026-10-17T03:31:04
+ebc66a9a-0350-4632-8d8f-c7013d24fc55,Maliya,Press,press_green_tile_thickness_bd,Press - Green Tile Thickness & Bulk Density,2026-10-17,A,green_width_mm,Green Width,,1355.0,,mm,2026-10-17T03:31:04
